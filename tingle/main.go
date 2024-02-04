@@ -130,7 +130,7 @@ func getOpponentMembers() (map[int]FactionMember, bool) {
 	return factionMembers, true
 }
 func viewIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("index.html"))
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
 	// var ctx = nil
 	ctx, ok := getFactionMembers(11559)
 	if !ok {

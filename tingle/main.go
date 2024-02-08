@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -21,6 +22,10 @@ type FactionMember struct {
 	LastSeen    string
 	Status      string
 	Status_Long string
+}
+
+type FactionMembers struct {
+	Members []int
 }
 
 var ctx = context.Background()
@@ -67,6 +72,7 @@ func getWarOpponent() (int, bool) {
 }
 
 func getFactionMembers(factionId int) (map[int]FactionMember, bool) {
+	// fmt.Println("running getFactionMembers")
 	factionMembers := make(map[int]FactionMember)
 
 	db, err := sql.Open("sqlite3", fmt.Sprintf("../balloon/%d.sqlite", factionId))
@@ -98,46 +104,50 @@ func getFactionMembers(factionId int) (map[int]FactionMember, bool) {
 	return factionMembers, true
 }
 
-func getOpponentMembers() (map[int]FactionMember, bool) {
+func getOpponentMembers(factionId int) (map[int]FactionMember, bool) {
 	factionMembers := make(map[int]FactionMember)
 
-	db, err := sql.Open("sqlite3", fmt.Sprintf("../balloon/%d.sqlite", factionId))
-	if err != nil {
-		fmt.Println(err)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	// var members FactionMembers
+	result, err := rdb.Get(ctx, fmt.Sprintf("%d", factionId)).Result()
+	if err == redis.Nil {
 		return nil, false
 	}
-	defer db.Close()
-
-	statement, err := db.Prepare("SELECT `userid`,`name`,`level`,`lastaction_status`,`lastaction_relative`,`status_description`,`status_state` FROM `members`")
 	if err != nil {
-		fmt.Println(err)
-		return nil, false
+		panic(err)
 	}
 
-	rows, err := statement.Query()
-	if err != nil {
-		fmt.Println(err)
-		return nil, false
-	}
-	defer rows.Close()
+	var resultMembers FactionMembers
+	json.Unmarshal([]byte(result), &resultMembers)
 
-	for rows.Next() {
-		var member FactionMember
-		rows.Scan(&member.UserId, &member.Name, &member.Level, &member.LastStatus, &member.LastSeen, &member.Status, &member.Status_Long)
-		factionMembers[member.UserId] = member
+	for _, member := range resultMembers.Members {
+		// fmt.Println(fmt.Sprintf("%d", member))
+
+		result, err := rdb.Get(ctx, fmt.Sprintf("%d", member)).Result()
+		if err == redis.Nil {
+			return nil, false
+		}
+		if err != nil {
+			panic(err)
+		}
+		var resultMember FactionMember
+		json.Unmarshal([]byte(result), &resultMember)
+		// factionMembers = append(factionMembers, resultMember)
+		factionMembers[member] = resultMember
 	}
-	rows.Close()
+
+	// fmt.Println(factionMembers)
 	return factionMembers, true
 }
 func viewIndex(w http.ResponseWriter, r *http.Request) {
+
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
-	// var ctx = nil
-	ctx, ok := getFactionMembers(11559)
-	if !ok {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, ctx)
+
+	tmpl.Execute(w, nil)
 }
 
 func viewMemberList(w http.ResponseWriter, r *http.Request) {
@@ -149,12 +159,13 @@ func viewMemberList(w http.ResponseWriter, r *http.Request) {
 	}
 	warOpponent, ok := getWarOpponent()
 	if !ok {
-		fmt.Println("failed to get war opponent")
+		// fmt.Println("failed to get war opponent")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf(fmt.Sprintf("%d", warOpponent))
-	ctx, ok := getFactionMembers(warOpponent)
+	// fmt.Printf(fmt.Sprintf("%d", warOpponent))
+	// getOpponentMembers(warOpponent)
+	ctx, ok := getOpponentMembers(warOpponent)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -168,6 +179,8 @@ func main() {
 	// fmt.Println(fmt.Sprintf("%d", time.Now().Unix()))
 	http.HandleFunc("/", viewIndex)
 	http.HandleFunc("/memberlist", viewMemberList)
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 

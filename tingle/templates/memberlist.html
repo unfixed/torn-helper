@@ -1,5 +1,5 @@
-
-    <table>
+<div >
+    <table class="bg-slate-200 rounded-md p-4 flex justify-center">
         <tr>
             <th>Name</th>
             <th>Level</th>
@@ -8,12 +8,15 @@
             <th>Status</th>
         </tr>
         {{ range . }}
-        <tr>
+        <tr class="flex-row">
             <td>{{.Name}}</td>
             <td>{{.Level}}</td>
             <td>{{.LastStatus}}</td>
             <td>{{.LastSeen}}</td>
-            <td>{{.Status}}</td>
+            <td class="flex flex-row center-content justify-items-center">
+                <div class="flex justify-center self-center">{{.Status}}</div>
+            </td>
         </tr>
         {{ end }}
     </table>
+</div>

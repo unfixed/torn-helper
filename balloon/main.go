@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -100,34 +98,9 @@ type FactionMembers struct {
 	Members []int
 }
 
-// func lookupUserBasic(userid, apikey string) {
-// 	fmt.Println("GETing user info...")
-
-// 	URL := fmt.Sprintf("https://api.torn.com/user/%s?selections=basic&key=%s", userid, apikey)
-
-// 	response, err := http.Get(URL)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	responseBody, err := io.ReadAll(response.Body)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	formattedData := string(responseBody)
-// 	fmt.Println("Status: ", response.Status)
-// 	fmt.Println("Response body: ", formattedData)
-
-// 	// clean up memory after execution
-// 	defer response.Body.Close()
-// }
-
 func getFactionBasicInfo(factionId string, apiKey string) {
-	fmt.Println("GETing Faction info...")
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
-	fmt.Println(URL)
 	response, err := http.Get(URL)
 	if err != nil {
 		log.Fatalln(err)
@@ -137,12 +110,9 @@ func getFactionBasicInfo(factionId string, apiKey string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("Status: ", response.Status)
-	// fmt.Println(string(responseBody))
 
 	var data FactionBasicInfo
 	json.Unmarshal(responseBody, &data)
-	fmt.Println(data.Name)
 
 	for _, rankedwar := range data.RankedWars {
 		for facId, _ := range rankedwar.Factions {
@@ -167,16 +137,30 @@ func updateWar(warOpponent int, warStart int) {
 		DB:       0,  // use default DB
 	})
 
-	_, err := rdb.Get(ctx, "warStartTime").Result()
+	startTime, err := rdb.Get(ctx, "warStartTime").Result()
 	if err == redis.Nil {
+		fmt.Println("warStartTime missing, setting value...")
 		err := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
 		if err != nil {
 			panic(err)
 		}
 	}
-
-	_, err = rdb.Get(ctx, "warOpponent").Result()
+	if startTime < fmt.Sprintf("%d", warStart) {
+		fmt.Println("warStartTime is wrong, updating value...")
+		err := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
+		if err != nil {
+			panic(err)
+		}
+	}
+	opponent, err := rdb.Get(ctx, "warOpponent").Result()
 	if err == redis.Nil {
+		err := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
+		if err != nil {
+			panic(err)
+		}
+	}
+	if opponent != fmt.Sprintf("%d", warOpponent) {
+		fmt.Println("warOpponent is wrong, updating value...")
 		err := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
 		if err != nil {
 			panic(err)
@@ -185,7 +169,6 @@ func updateWar(warOpponent int, warStart int) {
 }
 
 func getFactionMembers(factionId string, apiKey string) {
-	fmt.Println("GETing Faction members...")
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
 	// fmt.Println(URL)
@@ -198,11 +181,9 @@ func getFactionMembers(factionId string, apiKey string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println("Status: ", response.Status)
 
 	var data FactionBasicInfo
 	json.Unmarshal(responseBody, &data)
-	fmt.Println(data.Name)
 
 	var members []int
 	for i, m := range data.Members {
@@ -219,8 +200,6 @@ func (f FactionMembers) MarshalBinary() ([]byte, error) {
 	return json.Marshal(f)
 }
 func updateFactionRedis(factionId string, members []int) {
-	fmt.Println("running factionredisupdate")
-	fmt.Println(factionId)
 
 	var factionMembers FactionMembers
 	factionMembers.Members = members
@@ -262,79 +241,10 @@ func updateMemberRedis(factionId string, userid int, member Member) {
 
 }
 
-func updateMember(factionId string, userid int, member Member) {
-	fmt.Println(userid)
-
-	if _, err := os.Stat(fmt.Sprintf("./%s.sqlite", factionId)); errors.Is(err, os.ErrNotExist) {
-		createMembersTable(factionId)
-	}
-
-	db, err := sql.Open("sqlite3", fmt.Sprintf("./%s.sqlite", factionId))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer db.Close()
-
-	statement, err := db.Prepare("SELECT `userid` FROM `members` WHERE `userid`=?")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	rows, err := statement.Query(userid)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer rows.Close()
-
-	var rowCount int = 0
-	for rows.Next() {
-		rowCount++
-	}
-	rows.Close()
-
-	if rowCount > 0 {
-		// UPDATE EXISTING MEMBER IN TABLE
-		_, err := db.Exec("UPDATE `members` SET `name`=?,`level`=?,`lastaction_status`=?,`lastaction_relative`=?,`status_description`=?,`status_state`=? WHERE `userid`=?", member.Name, member.Level, member.LastAction.Status, member.LastAction.Relative, member.Status.Description, member.Status.State, userid)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-	} else {
-		// INSERT MEMBER INTO TABLE
-		_, err := db.Exec("INSERT INTO `members` (`userid`,`name`,`level`,`lastaction_status`,`lastaction_relative`,`status_description`,`status_state`) VALUES (?, ?, ?, ?, ?, ?, ?)", userid, member.Name, member.Level, member.LastAction.Status, member.LastAction.Relative, member.Status.Description, member.Status.State)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}
-
-}
-
-func createMembersTable(factionId string) {
-	db, err := sql.Open("sqlite3", fmt.Sprintf("./%s.sqlite", factionId))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	_, err = db.Exec("CREATE TABLE `members` (`userid` INTEGER PRIMARY KEY AUTOINCREMENT, `name` VARCHAR(64) NOT NULL, `level` INTEGER NOT NULL, `lastaction_status` VARCHAR(255) NULL, `lastaction_relative` VARCHAR(255) NULL, `status_description` VARCHAR(255) NULL, `status_state` VARCHAR(255))")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	} else {
-
-		fmt.Println("Created members table")
-	}
-
-	db.Close()
-}
 func main() {
 
 	// factionId := "46708"
-	factionId := "16628"
+	factionId := "22680"
 	tornApiKey, ok := os.LookupEnv("tornApiKey")
 	if !ok {
 		fmt.Println("tornApiKey missing")

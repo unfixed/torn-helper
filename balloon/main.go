@@ -12,6 +12,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 var ctx = context.Background()
@@ -86,13 +88,15 @@ type Member struct {
 }
 
 type FactionMember struct {
-	UserId      int
-	Name        string
-	Level       int
-	LastStatus  string
-	LastSeen    string
-	Status      string
-	Status_Long string
+	UserId         int
+	Name           string
+	Level          int
+	LastStatus     string
+	LastSeen       string
+	Status         string
+	Status_Long    string
+	BattleStats    string
+	BattleStatsRaw int64
 }
 type FactionMembers struct {
 	Members []int
@@ -168,6 +172,35 @@ func updateWar(warOpponent int, warStart int) {
 	}
 }
 
+// func getUserStats(factionId string, apiKey string) {
+
+// 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
+// 	// fmt.Println(URL)
+// 	response, err := http.Get(URL)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+
+// 	responseBody, err := io.ReadAll(response.Body)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+
+// 	var data FactionBasicInfo
+// 	json.Unmarshal(responseBody, &data)
+
+// 	var members []int
+// 	for i, m := range data.Members {
+// 		members = append(members, i)
+// 		// updateMember(factionId, i, m)
+// 		//updateMemberRedis(factionId, i, m)
+// 	}
+// 	updateFactionRedis(factionId, members)
+
+// 	// clean up memory after execution
+// 	defer response.Body.Close()
+// }
+
 func getFactionMembers(factionId string, apiKey string) {
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
@@ -189,7 +222,8 @@ func getFactionMembers(factionId string, apiKey string) {
 	for i, m := range data.Members {
 		members = append(members, i)
 		// updateMember(factionId, i, m)
-		updateMemberRedis(factionId, i, m)
+		// personalStats :=
+		updateMemberRedis(factionId, i, m, getSpyReport(i))
 	}
 	updateFactionRedis(factionId, members)
 
@@ -219,15 +253,19 @@ func updateFactionRedis(factionId string, members []int) {
 func (f FactionMember) MarshalBinary() ([]byte, error) {
 	return json.Marshal(f)
 }
-func updateMemberRedis(factionId string, userid int, member Member) {
+func updateMemberRedis(factionId string, userid int, member Member, spyReport SpyUserResponse) {
 
 	var facMember FactionMember
+	facMember.UserId = userid
 	facMember.Name = member.Name
 	facMember.Level = member.Level
 	facMember.LastStatus = member.LastAction.Status
 	facMember.LastSeen = member.LastAction.Relative
 	facMember.Status = member.Status.Description
 	facMember.Status_Long = member.Status.Details
+	facMember.BattleStatsRaw = spyReport.Spy.Total
+	p := message.NewPrinter(language.English)
+	facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -244,7 +282,7 @@ func updateMemberRedis(factionId string, userid int, member Member) {
 func main() {
 
 	// factionId := "46708"
-	factionId := "22680"
+	factionId := "45421"
 	tornApiKey, ok := os.LookupEnv("tornApiKey")
 	if !ok {
 		fmt.Println("tornApiKey missing")
@@ -252,6 +290,13 @@ func main() {
 		// fmt.Println(factionId, tornApiKey)
 		os.Exit(1)
 	}
-
+	tornStatsApiKey, ok := os.LookupEnv("tornStatsApiKey")
+	if !ok {
+		fmt.Println("tornStatsApiKey missing start")
+		// fmt.Println(os.Environ())
+		// fmt.Println(factionId, tornApiKey)
+		os.Exit(1)
+	}
+	_ = tornStatsApiKey
 	getFactionBasicInfo(factionId, tornApiKey)
 }

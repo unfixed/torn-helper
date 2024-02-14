@@ -117,22 +117,26 @@ func sortMembers(inputMembers map[int]FactionMember) []FactionMember {
 	size := len(temp)
 	for i := 1; i < size; i++ {
 		for k, m := range temp {
-			if (highestIndex == 0) || (highestStats.Status < m.Status) {
+			if (highestIndex == 0) || (highestStats.LastStatus < m.LastStatus) {
 				highestStats = m
 				highestIndex = k
 
 			}
-
-			if (highestStats.Status == m.Status) && (highestStats.BattleStatsRaw < m.BattleStatsRaw) {
+			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) {
 				highestStats = m
 				highestIndex = k
 
 			}
-			if (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level < m.Level) {
+			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status == m.Status) && (highestStats.BattleStatsRaw < m.BattleStatsRaw) {
+				highestStats = m
+				highestIndex = k
+
+			}
+			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level < m.Level) {
 				highestStats = m
 				highestIndex = k
 			}
-			if (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level == m.Level) && (highestStats.Name < m.Name) {
+			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level == m.Level) && (highestStats.Name < m.Name) {
 				highestStats = m
 				highestIndex = k
 			}

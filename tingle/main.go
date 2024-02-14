@@ -111,32 +111,62 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 func sortMembers(inputMembers map[int]FactionMember) []FactionMember {
 	var factionMembers []FactionMember
 
+	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
+	evalStatus := map[string]int{"Okay": 1,
+		"In Mexico":                   2,
+		"Traveling to Mexico":         3,
+		"In Cayman Islands":           4,
+		"Traveling to Cayman Islands": 5,
+		"In Canada":                   6,
+		"Traveling to Canada":         7,
+		"In Hawaii":                   8,
+		"Traveling to Hawaii":         9,
+		"In United Kingdom":           10,
+		"Traveling to United Kingdom": 11,
+		"In Argentina":                12,
+		"Traveling to Argentina":      13,
+		"In Switzerland":              14,
+		"Traveling to Switzerland":    15,
+		"In Japan":                    16,
+		"Traveling to Japan":          17,
+		"In China":                    18,
+		"Traveling to China":          19,
+		"In UAE":                      20,
+		"Traveling to UAE":            21,
+		"In South Africa":             22,
+		"Traveling to South Africa":   23,
+		"Fallen":                      100,
+	}
+
 	temp := inputMembers
 	var highestStats FactionMember
 	var highestIndex int = -1
 	size := len(temp)
 	for i := 1; i < size; i++ {
 		for k, m := range temp {
-			if (highestIndex == 0) || (highestStats.LastStatus < m.LastStatus) {
+			fmt.Println(fmt.Sprintf("|%s|", m.Status))
+			fmt.Println(evalStatus[m.Status])
+			// break
+			if (highestIndex == 0) || (evalStatus[highestStats.Status] > evalStatus[m.Status]) {
 				highestStats = m
 				highestIndex = k
 
 			}
-			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) {
+			if (highestStats.Status == m.Status) && (evalLastStatus[highestStats.LastStatus] < evalLastStatus[m.LastStatus]) {
 				highestStats = m
 				highestIndex = k
 
 			}
-			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status == m.Status) && (highestStats.BattleStatsRaw < m.BattleStatsRaw) {
+			if (highestStats.Status == m.Status) && (highestStats.LastStatus == m.LastStatus) && (highestStats.BattleStatsRaw < m.BattleStatsRaw) {
 				highestStats = m
 				highestIndex = k
 
 			}
-			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level < m.Level) {
+			if (highestStats.Status == m.Status) && (highestStats.LastStatus == m.LastStatus) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level < m.Level) {
 				highestStats = m
 				highestIndex = k
 			}
-			if (highestStats.LastStatus == m.LastStatus) && (highestStats.Status < m.Status) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level == m.Level) && (highestStats.Name < m.Name) {
+			if (highestStats.Status == m.Status) && (highestStats.LastStatus == m.LastStatus) && (highestStats.BattleStatsRaw == m.BattleStatsRaw) && (highestStats.Level == m.Level) && (highestStats.Name < m.Name) {
 				highestStats = m
 				highestIndex = k
 			}

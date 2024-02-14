@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="static/output.css">
     </head>
     <body>
-        <div class="flex justify-center" hx-get="/memberlist" hx-trigger="load" hx-swap="innerHTML"></div>
+        <div class="flex justify-center" hx-get="/memberlist" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
 
     </body>
 </html>

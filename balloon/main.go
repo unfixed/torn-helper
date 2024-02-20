@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -88,15 +89,18 @@ type Member struct {
 }
 
 type FactionMember struct {
-	UserId         int
-	Name           string
-	Level          int
-	LastStatus     string
-	LastSeen       string
-	Status         string
-	Status_Long    string
-	BattleStats    string
-	BattleStatsRaw int64
+	UserId            int
+	Name              string
+	Level             int
+	LastStatus        string
+	LastStatusRaw     int
+	LastSeen          string
+	LastSeenTimestamp int
+	Status            string
+	StatusRaw         int
+	Status_Long       string
+	BattleStats       string
+	BattleStatsRaw    int64
 }
 type FactionMembers struct {
 	Members []int
@@ -250,18 +254,49 @@ func updateFactionRedis(factionId string, members []int) {
 
 }
 
+func evalStatus(inputStatus Status) int {
+	value := 1
+
+	switch {
+	case inputStatus.Description == "Okay":
+		return value
+	case strings.Contains(inputStatus.Description, "In hospital for"):
+		hosptime := strings.Fields(strings.Replace(inputStatus.Description, "In hospital for", "", 1))
+		_ = hosptime
+		fmt.Println(hosptime)
+		// value =
+
+	}
+
+	// if inputStatus.Description == "Okay" {
+	// 	return value
+	// }
+	// if strings.Contains(inputStatus.Description,"")
+
+	return value
+}
+
 func (f FactionMember) MarshalBinary() ([]byte, error) {
 	return json.Marshal(f)
 }
 func updateMemberRedis(factionId string, userid int, member Member, spyReport SpyUserResponse) {
+
+	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
 
 	var facMember FactionMember
 	facMember.UserId = userid
 	facMember.Name = member.Name
 	facMember.Level = member.Level
 	facMember.LastStatus = member.LastAction.Status
+
+	facMember.LastStatusRaw = evalLastStatus[member.LastAction.Status]
+
 	facMember.LastSeen = member.LastAction.Relative
+	facMember.LastSeenTimestamp = member.LastAction.Timestamp
+
 	facMember.Status = member.Status.Description
+	facMember.StatusRaw = evalStatus(member.Status)
+
 	facMember.Status_Long = member.Status.Details
 	facMember.BattleStatsRaw = spyReport.Spy.Total
 	p := message.NewPrinter(language.English)
@@ -281,8 +316,8 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 
 func main() {
 
-	// factionId := "46708"
-	factionId := "45421"
+	factionId := "46708"
+	// factionId := "45421"
 	tornApiKey, ok := os.LookupEnv("tornApiKey")
 	if !ok {
 		fmt.Println("tornApiKey missing")

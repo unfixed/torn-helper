@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/go-redis/redis/v8"
@@ -224,6 +225,13 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	tingleSSL, ok := os.LookupEnv("tingleSSL")
+	if !ok {
+		fmt.Println("tingleSSL missing")
+		log.Fatal(http.ListenAndServe(":8000", nil))
+	}
+	tingleSSLCert := tingleSSL + "fullchain.pem"
+	tingleSSLkey := tingleSSL + "privkey.pem"
+	log.Fatal(http.ListenAndServeTLS(":443", tingleSSLCert, tingleSSLkey, nil))
 
 }

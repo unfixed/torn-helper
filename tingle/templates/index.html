@@ -11,9 +11,9 @@
     </head>
     <body>
         <p>Page refreshes every 5 seconds</p>
-        
+
         <div class="flex justify-center">
-            <div hx-get="/memberlist" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+            <div hx-get="/memberlist" hx-trigger="load" hx-swap="innerHTML"></div>
         </div>
     </body>
 </html>

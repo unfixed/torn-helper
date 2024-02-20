@@ -581,6 +581,10 @@ video {
   flex-direction: row;
 }
 
+.flex-col {
+  flex-direction: column;
+}
+
 .place-items-end {
   place-items: end;
 }

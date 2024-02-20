@@ -15,15 +15,23 @@ import (
 )
 
 type FactionMember struct {
-	UserId         int
-	Name           string
-	Level          int
-	LastStatus     string
-	LastSeen       string
-	Status         string
-	Status_Long    string
-	BattleStats    string
-	BattleStatsRaw int64
+	UserId             int
+	Name               string
+	Level              int
+	LastStatus         string
+	LastSeen           string
+	Status             string
+	Status_Long        string
+	BattleStats        string
+	BattleStatsRaw     int64
+	BattleStats_Str    string
+	BattleStats_StrRaw int64
+	BattleStats_Def    string
+	BattleStats_DefRaw int64
+	BattleStats_Dex    string
+	BattleStats_DexRaw int64
+	BattleStats_Spd    string
+	BattleStats_SpdRaw int64
 }
 
 type FactionMembers struct {

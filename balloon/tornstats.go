@@ -88,9 +88,8 @@ func getSpyReport(userId int) SpyUserResponse {
 			log.Fatalln(err)
 		}
 		json.Unmarshal(responseBody, &spyReport)
-
 		defer response.Body.Close()
-		time.Sleep(1 * time.Second)
+
 		//push to cache
 		err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", userId), spyReport, time.Duration(rand.Intn(60)+10080)*time.Minute).Err()
 		if err != nil {

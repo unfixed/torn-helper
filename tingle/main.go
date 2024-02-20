@@ -157,9 +157,6 @@ func sortMembers(inputMembers map[int]FactionMember) []FactionMember {
 	size := len(temp)
 	for i := 1; i < size; i++ {
 		for k, m := range temp {
-			fmt.Println(fmt.Sprintf("|%s|", m.Status))
-			fmt.Println(evalStatus[m.Status])
-			// break
 			if (highestIndex == 0) || (evalStatus[highestStats.Status] > evalStatus[m.Status]) {
 				highestStats = m
 				highestIndex = k

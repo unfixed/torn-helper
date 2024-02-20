@@ -36,8 +36,8 @@ type SpyUserResponse struct {
 		Strength           int64   `json:"strength"`
 		DeltaStrength      int64   `json:"deltaStrength"`
 		StrengthTimestamp  int     `json:"strength_timestamp"`
-		Defense            int     `json:"defense"`
-		DeltaDefense       int     `json:"deltaDefense"`
+		Defense            int64   `json:"defense"`
+		DeltaDefense       int64   `json:"deltaDefense"`
 		DefenseTimestamp   int     `json:"defense_timestamp"`
 		Speed              int64   `json:"speed"`
 		DeltaSpeed         int64   `json:"deltaSpeed"`

@@ -113,30 +113,42 @@ func sortMembers(inputMembers map[int]FactionMember) []FactionMember {
 	var factionMembers []FactionMember
 
 	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
-	evalStatus := map[string]int{"Okay": 1,
-		"In Mexico":                   2,
-		"Traveling to Mexico":         3,
-		"In Cayman Islands":           4,
-		"Traveling to Cayman Islands": 5,
-		"In Canada":                   6,
-		"Traveling to Canada":         7,
-		"In Hawaii":                   8,
-		"Traveling to Hawaii":         9,
-		"In United Kingdom":           10,
-		"Traveling to United Kingdom": 11,
-		"In Argentina":                12,
-		"Traveling to Argentina":      13,
-		"In Switzerland":              14,
-		"Traveling to Switzerland":    15,
-		"In Japan":                    16,
-		"Traveling to Japan":          17,
-		"In China":                    18,
-		"Traveling to China":          19,
-		"In UAE":                      20,
-		"Traveling to UAE":            21,
-		"In South Africa":             22,
-		"Traveling to South Africa":   23,
-		"Fallen":                      100,
+	evalStatus := map[string]int{
+		"Okay":                                  1,
+		"Returning to Torn from Mexico":         10000,
+		"In Mexico":                             10001,
+		"Traveling to Mexico":                   10002,
+		"Returning to Torn from Cayman Islands": 20000,
+		"In Cayman Islands":                     20001,
+		"Traveling to Cayman Islands":           20002,
+		"Returning to Torn from Canada":         30000,
+		"In Canada":                             30001,
+		"Traveling to Canada":                   30002,
+		"Returning to Torn from Hawaii":         40000,
+		"In Hawaii":                             40001,
+		"Traveling to Hawaii":                   40002,
+		"Returning to Torn from United Kingdom": 50000,
+		"In United Kingdom":                     50001,
+		"Traveling to United Kingdom":           50002,
+		"Returning to Torn from Argentina":      60000,
+		"In Argentina":                          60001,
+		"Traveling to Argentina":                60002,
+		"Returning to Torn from Switzerland":    70000,
+		"In Switzerland":                        70001,
+		"Traveling to Switzerland":              70002,
+		"Returning to Torn from Japan":          80000,
+		"In Japan":                              80001,
+		"Traveling to Japan":                    80002,
+		"Returning to Torn from China":          90000,
+		"In China":                              90001,
+		"Traveling to China":                    90002,
+		"Returning to Torn from UAE":            100000,
+		"In UAE":                                100001,
+		"Traveling to UAE":                      100002,
+		"Returning to Torn from South Africa":   110000,
+		"In South Africa":                       110001,
+		"Traveling to South Africa":             110002,
+		"Fallen":                                1000000,
 	}
 
 	temp := inputMembers
@@ -227,7 +239,7 @@ func main() {
 
 	tingleSSL, ok := os.LookupEnv("tingleSSL")
 	if !ok {
-		fmt.Println("tingleSSL missing")
+		fmt.Println("tingleSSL missing, running as http on port 8000")
 		log.Fatal(http.ListenAndServe(":8000", nil))
 	}
 	tingleSSLCert := tingleSSL + "fullchain.pem"

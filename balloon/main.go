@@ -89,18 +89,26 @@ type Member struct {
 }
 
 type FactionMember struct {
-	UserId            int
-	Name              string
-	Level             int
-	LastStatus        string
-	LastStatusRaw     int
-	LastSeen          string
-	LastSeenTimestamp int
-	Status            string
-	StatusRaw         int
-	Status_Long       string
-	BattleStats       string
-	BattleStatsRaw    int64
+	UserId             int
+	Name               string
+	Level              int
+	LastStatus         string
+	LastStatusRaw      int
+	LastSeen           string
+	LastSeenTimestamp  int
+	Status             string
+	StatusRaw          int
+	Status_Long        string
+	BattleStats        string
+	BattleStatsRaw     int64
+	BattleStats_Str    string
+	BattleStats_StrRaw int64
+	BattleStats_Def    string
+	BattleStats_DefRaw int64
+	BattleStats_Dex    string
+	BattleStats_DexRaw int64
+	BattleStats_Spd    string
+	BattleStats_SpdRaw int64
 }
 type FactionMembers struct {
 	Members []int
@@ -288,19 +296,25 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 	facMember.Name = member.Name
 	facMember.Level = member.Level
 	facMember.LastStatus = member.LastAction.Status
-
 	facMember.LastStatusRaw = evalLastStatus[member.LastAction.Status]
-
 	facMember.LastSeen = member.LastAction.Relative
 	facMember.LastSeenTimestamp = member.LastAction.Timestamp
-
 	facMember.Status = member.Status.Description
 	facMember.StatusRaw = evalStatus(member.Status)
-
 	facMember.Status_Long = member.Status.Details
-	facMember.BattleStatsRaw = spyReport.Spy.Total
+
 	p := message.NewPrinter(language.English)
+	facMember.BattleStatsRaw = spyReport.Spy.Total
 	facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
+
+	facMember.BattleStats_StrRaw = spyReport.Spy.Strength
+	facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
+	facMember.BattleStats_DefRaw = spyReport.Spy.Defense
+	facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
+	facMember.BattleStats_DexRaw = spyReport.Spy.Dexterity
+	facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
+	facMember.BattleStats_SpdRaw = spyReport.Spy.Speed
+	facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",

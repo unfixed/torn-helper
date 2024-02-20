@@ -114,7 +114,7 @@ func sortMembers(inputMembers map[int]FactionMember) []FactionMember {
 
 	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
 	evalStatus := map[string]int{
-		"Okay":                                  1,
+		"Okay":                                  -1,
 		"Returning to Torn from Mexico":         10000,
 		"In Mexico":                             10001,
 		"Traveling to Mexico":                   10002,

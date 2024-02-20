@@ -11,52 +11,7 @@
     </head>
     <body>
         <div class="flex justify-center">
-
-
-
-
-            <div >
-                <table class="bg-slate-100 rounded-md p-4 flex justify-center">
-                    <tbody class="[&>*:nth-child(odd)]:bg-slate-200 [&>*:nth-child(even)]:bg-slate-300">
-                        <tr class="rounded-t-lg bg-slate-100">
-                            <th>Name</th>
-                            <th>Level</th>
-                            <th>Battle Stats</th>
-                            <th>Last Status</th>
-                            <th>Last Seen</th>
-                            <th>Currently</th>
-                        </tr>
-
-                        <tr hx-get="/memberlist" hx-trigger="load" hx-swap="outerHTML"></tr>
-
-                    </tbody>
-                </table>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
+            <div hx-get="/memberlist" hx-trigger="load" hx-swap="innerHTML"></div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </body>
 </html>

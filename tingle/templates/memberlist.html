@@ -1,3 +1,13 @@
+<table class="bg-slate-100 rounded-md p-4 flex justify-center">
+    <tbody class="[&>*:nth-child(odd)]:bg-slate-200 [&>*:nth-child(even)]:bg-slate-300">
+        <tr class="rounded-t-lg bg-slate-100">
+            <th>Name</th>
+            <th>Level</th>
+            <th>Battle Stats</th>
+            <th>Last Status</th>
+            <th>Last Seen</th>
+            <th>Currently</th>
+        </tr>
 
             {{ range . }}
             <tr class="flex-row">
@@ -49,3 +59,6 @@
                 </td>
             </tr>
             {{ end }}
+
+        </tbody>
+    </table>

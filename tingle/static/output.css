@@ -584,6 +584,10 @@ video {
   justify-content: center;
 }
 
+.overflow-scroll {
+  overflow: scroll;
+}
+
 .rounded-md {
   border-radius: 0.375rem;
 }
@@ -659,6 +663,12 @@ video {
 
 .hover\:underline:hover {
   text-decoration-line: underline;
+}
+
+@media (min-width: 1024px) {
+  .lg\:justify-center {
+    justify-content: center;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -10,10 +10,10 @@
         <link rel="stylesheet" href="static/output.css">
     </head>
     <body>
-        <p>Page refreshes every 5 seconds</p>
+        <p>Page refreshes every 2 seconds</p>
 
         <div class="flex justify-center">
-            <div hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+            <div hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 2s" hx-swap="innerHTML"></div>
         </div>
     </body>
 </html>

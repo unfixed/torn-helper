@@ -47,6 +47,7 @@ func checkForWar() bool {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
 
 	_, err := rdb.Get(ctx, "warStartTime").Result()
 	if err == redis.Nil {
@@ -66,6 +67,7 @@ func getWarOpponent() (int, bool) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
 
 	response, err := rdb.Get(ctx, "warOpponent").Result()
 	if err == redis.Nil {
@@ -89,6 +91,8 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
+
 	result, err := rdb.Get(ctx, fmt.Sprintf("%d", factionId)).Result()
 	if err == redis.Nil {
 		return nil

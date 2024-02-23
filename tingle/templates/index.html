@@ -13,7 +13,7 @@
         <p>Page refreshes every 2 seconds</p>
 
         <div class="flex lg:justify-center">
-            <div x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 1s" hx-swap="innerHTML"></div>
+            <div x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every .75s" hx-swap="innerHTML"></div>
         </div>
     </body>
 </html>

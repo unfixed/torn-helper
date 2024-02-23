@@ -35,8 +35,11 @@
 {{ range .members }}<tr class="flex-row">
     <td><div class="grid place-items-left px-2"><div >{{.Name}}</div></div></td>
     <td><div class="grid place-items-center px-2"><div >{{.Level}}</div></div></td>
-    <td><div class="grid place-items-center px-2 hover:underline"
-        x-on:click="if(battlestats_map.has({{.UserId}})){battlestats_map.set({{.UserId}},!battlestats_map.get({{.UserId}}))}else{battlestats_map.set({{.UserId}},true)}" ><div >{{.BattleStats}}</div><div x-show="battlestats_map.get({{.UserId}})" class="no-underline flex flex-col"><div>Strength: {{.BattleStats_Str}}</div><div>Defense: {{.BattleStats_Def}}</div><div>Speed: {{.BattleStats_Spd}}</div><div>Dexterity: {{.BattleStats_Dex}}</div></div></div></td><td><div class="grid px-2"><div class="font-medium rounded-md {{ if eq .LastStatus "Online"}} bg-green-100 text-green-600 dark:text-green-500{{ else if eq .LastStatus "Idle" }} bg-orange-100 text-orange-600 dark:text-orange-500 {{ else if eq .LastStatus "Offline" }} bg-red-100 text-red-600 dark:text-red-500 {{ end }} hover:underline text-center">{{.LastStatus}}</div></div></td><td><div class="grid place-items-left px-2"><div >{{.LastSeen}}</div></div></td>
+    <td><div class="grid place-items-center px-2 hover:underline" 
+                x-on:click="if(battlestats_map.has({{.UserId}})){battlestats_map.set({{.UserId}},!battlestats_map.get({{.UserId}}))}else{battlestats_map.set({{.UserId}},true)};console.log('clicked{{.UserId}}')" >
+        <div >{{.BattleStats}}</div>
+        <div x-transition x-show="battlestats_map.get({{.UserId}})" class="no-underline flex flex-col">
+            <div>Strength: {{.BattleStats_Str}}</div><div>Defense: {{.BattleStats_Def}}</div><div>Speed: {{.BattleStats_Spd}}</div><div>Dexterity: {{.BattleStats_Dex}}</div></div></div></td><td><div class="grid px-2"><div class="font-medium rounded-md {{ if eq .LastStatus "Online"}} bg-green-100 text-green-600 dark:text-green-500{{ else if eq .LastStatus "Idle" }} bg-orange-100 text-orange-600 dark:text-orange-500 {{ else if eq .LastStatus "Offline" }} bg-red-100 text-red-600 dark:text-red-500 {{ end }} hover:underline text-center">{{.LastStatus}}</div></div></td><td><div class="grid place-items-left px-2"><div >{{.LastSeen}}</div></div></td>
 
 <td><div class="flex justify-end px-2"><div class="flex flex-row">
     {{ if eq .Status "Okay"}}<a class="inline-flex px-2 hover:underline text-red-600 dark:text-red-500" href="https://www.torn.com/loader.php?sid=attack&user2ID={{.UserId}}" target="_blank">Attack</a>  <div class="inline-flex px-2 font-medium text-green-600 dark:text-green-500 pr-10">{{ end }}{{.Status}}</div></div></div></td>

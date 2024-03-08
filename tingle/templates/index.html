@@ -13,8 +13,8 @@
     <body>
         <p>Page refreshes every 2 seconds normally.</p>
         <div x-data="{ fastPolling: false }">
-            <input id="fastPolling" type="checkbox" x-model="fastPolling" x-on:click="$refs.mytable.setAttribute('hx-trigger',( !fastPolling ? 'load, every 750ms' : 'load, every 5s' )), htmx.process('#refreshToggle')"  />
-            <label for="fastPolling">Check for faster data (every .75 seconds instead of 2 seconds)</label>
+            <input id="fastPolling" type="checkbox" x-model="fastPolling" x-on:click="$refs.mytable.setAttribute('hx-trigger',( !fastPolling ? 'load, every 500ms' : 'load, every 2s' )), htmx.process('#refreshToggle')"  />
+            <label for="fastPolling">Check box for updates every ~1 second</label>
             <div class="flex lg:justify-center">
                 
                 <div id="refreshToggle" x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 2s" hx-swap="innerHTML"></div>

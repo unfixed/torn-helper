@@ -271,7 +271,7 @@ func evalStatus(inputStatus Status) int {
 	case strings.Contains(inputStatus.Description, "In hospital for"):
 		hosptime := strings.Fields(strings.Replace(inputStatus.Description, "In hospital for", "", 1))
 		_ = hosptime
-		fmt.Println(hosptime)
+		//fmt.Println(hosptime)
 		// value =
 
 	}
@@ -300,7 +300,7 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 	facMember.LastSeen = member.LastAction.Relative
 	facMember.LastSeenTimestamp = member.LastAction.Timestamp
 	facMember.Status = member.Status.Description
-	facMember.StatusRaw = evalStatus(member.Status)
+	facMember.StatusRaw = 0
 	facMember.Status_Long = member.Status.Details
 
 	p := message.NewPrinter(language.English)

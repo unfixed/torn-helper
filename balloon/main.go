@@ -305,26 +305,56 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 
 	p := message.NewPrinter(language.English)
 	facMember.BattleStatsRaw = spyReport.Spy.Total
-	facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
-
+	// facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
 	switch total := spyReport.Spy.Total; {
 	case total < 1000000:
 		facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
 	case total <1000000000:
-		facMember.BattleStats = p.Sprintf("%fM", (float32(spyReport.Spy.Total/1000000)))
+		facMember.BattleStats = p.Sprintf("%.2fM", (float32(spyReport.Spy.Total)/1000000))
 	case total >=1000000000:
-		facMember.BattleStats = p.Sprintf("%fB", (float32(spyReport.Spy.Total/1000000000)))
-
+		facMember.BattleStats = p.Sprintf("%.2fB", (float32(spyReport.Spy.Total)/1000000000))
 	}
-	
+
 	facMember.BattleStats_StrRaw = spyReport.Spy.Strength
-	facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
+	// facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
+	switch strength := spyReport.Spy.Strength; {
+	case strength < 1000000:
+		facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
+	case strength <1000000000:
+		facMember.BattleStats_Str = p.Sprintf("%.2fM", (float32(spyReport.Spy.Strength)/1000000))
+	case strength >=1000000000:
+		facMember.BattleStats_Str = p.Sprintf("%.2fB", (float32(spyReport.Spy.Strength)/1000000000))
+	}
 	facMember.BattleStats_DefRaw = spyReport.Spy.Defense
-	facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
+	// facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
+	switch defense := spyReport.Spy.Defense; {
+	case defense < 1000000:
+		facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
+	case defense <1000000000:
+		facMember.BattleStats_Def = p.Sprintf("%.2fM", (float32(spyReport.Spy.Defense)/1000000))
+	case defense >=1000000000:
+		facMember.BattleStats_Def = p.Sprintf("%.2fB", (float32(spyReport.Spy.Defense)/1000000000))
+	}
 	facMember.BattleStats_DexRaw = spyReport.Spy.Dexterity
-	facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
+	// facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
+	switch dexterity := spyReport.Spy.Dexterity; {
+	case dexterity < 1000000:
+		facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
+	case dexterity <1000000000:
+		facMember.BattleStats_Dex = p.Sprintf("%.2fM", (float32(spyReport.Spy.Dexterity)/1000000))
+	case dexterity >=1000000000:
+		facMember.BattleStats_Dex = p.Sprintf("%.2fB", (float32(spyReport.Spy.Dexterity)/1000000000))
+	}
 	facMember.BattleStats_SpdRaw = spyReport.Spy.Speed
-	facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
+	// facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
+	switch speed := spyReport.Spy.Speed; {
+	case speed < 1000000:
+		facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
+	case speed <1000000000:
+		facMember.BattleStats_Spd = p.Sprintf("%.2fM", (float32(spyReport.Spy.Speed)/1000000))
+	case speed >=1000000000:
+		facMember.BattleStats_Spd = p.Sprintf("%.2fB", (float32(spyReport.Spy.Speed)/1000000000))
+	}
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",

@@ -307,6 +307,15 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 	facMember.BattleStatsRaw = spyReport.Spy.Total
 	facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
 
+	switch total := spyReport.Spy.Total; {
+	case total < 1000000:
+		facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
+	case total <1000000000:
+		facMember.BattleStats = p.Sprintf("%fM", (float32(spyReport.Spy.Total/1000000)))
+	case total >=1000000000:
+		facMember.BattleStats = p.Sprintf("%fB", (float32(spyReport.Spy.Total/1000000000)))
+
+
 	facMember.BattleStats_StrRaw = spyReport.Spy.Strength
 	facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
 	facMember.BattleStats_DefRaw = spyReport.Spy.Defense

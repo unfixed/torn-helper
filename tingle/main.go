@@ -151,17 +151,17 @@ func evalStatus(inputStatus string) int {
 		calculated_value += 4000000
 	case strings.Contains(status, "United Kingdom"):
 		calculated_value += 5000000
-	case strings.Contains(status, "Argentina"):
+	case strings.Contains(status, "Argentina") || strings.Contains(status, "Argentinian"):
 		calculated_value += 6000000
-	case strings.Contains(status, "Switzerland"):
+	case strings.Contains(status, "Switzerland") || strings.Contains(status, "Swiss"):
 		calculated_value += 7000000
-	case strings.Contains(status, "Japan"):
+	case strings.Contains(status, "Japan") || strings.Contains(status, "Japanese"):
 		calculated_value += 8000000
-	case strings.Contains(status, "China"):
+	case strings.Contains(status, "China") || strings.Contains(status, "Chinese"):
 		calculated_value += 9000000
 	case strings.Contains(status, "UAE") || strings.Contains(status, "Emirati"):
 		calculated_value += 10000000
-	case strings.Contains(status, "South Africa"):
+	case strings.Contains(status, "South Africa") || strings.Contains(status, "South African"):
 		calculated_value += 11000000
 	}
 

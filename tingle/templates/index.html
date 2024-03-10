@@ -11,14 +11,9 @@
         <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     </head>
     <body>
-        <p>Page refreshes every 2 seconds normally.</p>
-        <div x-data="{ fastPolling: false }">
-            <input id="fastPolling" type="checkbox" x-model="fastPolling" x-on:click="$refs.mytable.setAttribute('hx-trigger',( !fastPolling ? 'load, every 500ms' : 'load, every 2s' )), htmx.process('#refreshToggle')"  />
-            <label for="fastPolling">Check box for updates every ~1 second</label>
-            <div class="flex lg:justify-center">
-                
-                <div id="refreshToggle" x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 2s" hx-swap="innerHTML"></div>
-            </div>
+        <div class="flex flex-col lg:justify-center">
+            <div class="flex justify-center"><p>Torn caches api calls for ~30 seconds. So that's about how old the data below might be.</p></div>
+            <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
         </div>
         <svg hidden style="display: none" class="my-icon my-icon-lock" aria-hidden="true" focusable="false" width="24px" height="24px" viewBox="0 0 24 24">
             <symbol id="attack_icon">

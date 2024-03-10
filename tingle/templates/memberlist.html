@@ -46,7 +46,17 @@
         <div x-transition x-show="battlestats_map.get({{.UserId}})" class="no-underline flex flex-col">
             <div>STR: {{.BattleStats_Str}}</div><div>DEF: {{.BattleStats_Def}}</div><div>SPD: {{.BattleStats_Spd}}</div><div>DEX: {{.BattleStats_Dex}}</div></div></div></td><td><div class="grid px-2"><div class="font-medium rounded-md {{ if eq .LastStatus "Online"}} bg-green-100 text-green-600 dark:text-green-500{{ else if eq .LastStatus "Idle" }} bg-orange-100 text-orange-600 dark:text-orange-500 {{ else if eq .LastStatus "Offline" }} bg-red-100 text-red-600 dark:text-red-500 {{ end }} hover:underline text-center">{{.LastStatus}}</div></div></td><td><div class="grid place-items-left px-2"><div >{{.LastSeen}}</div></div></td>
 
-<td><div class="flex justify-end px-2"><div class="flex flex-row">
-    {{ if eq .Status "Okay"}}<a class="inline-flex px-2 hover:underline text-red-600 dark:text-red-500" href="https://www.torn.com/loader.php?sid=attack&user2ID={{.UserId}}" target="_blank">Attack</a>  <div class="inline-flex px-2 font-medium text-green-600 dark:text-green-500 pr-10">{{ end }}{{.Status}}</div></div></div></td>
+<td><div class="flex justify-start px-2">
+        <div>
+            <a class="inline-flex px-2 hover:underline text-red-600 dark:text-red-500" href="https://www.torn.com/loader.php?sid=attack&user2ID={{.UserId}}" target="_blank">
+                <svg focusable="false" width="24" height="24" viewBox="0 0 24 24">
+                    <use xlink:href="#attack_icon" />
+                </svg>
+            </a> 
+        </div>
+        <div class="inline-flex px-2 {{ if eq .Status "Okay" }} font-medium text-green-600 dark:text-green-500 {{ end }} pr-5">
+            {{.Status}}
+        </div>
+</div></td>
 </tr>{{ end }}
 </tbody></table>

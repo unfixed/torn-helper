@@ -11,7 +11,8 @@
         <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
     </head>
     <body>
-        <div class="flex flex-col lg:justify-center">
+        
+        <div class="overflow-x-autoflex flex-col lg:justify-center">
             <div class="flex justify-center"><p>Torn caches api calls for ~30 seconds. So that's about how old the data below might be.</p></div>
             <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
         </div>

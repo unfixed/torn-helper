@@ -370,8 +370,9 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 
 func main() {
 
-	factionId := "46708"
-	// factionId := "45421"
+	// factionId := "46708"
+
+	factionId := "30085"
 	tornApiKey, ok := os.LookupEnv("tornApiKey")
 	if !ok {
 		fmt.Println("tornApiKey missing")

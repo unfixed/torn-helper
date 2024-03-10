@@ -141,7 +141,7 @@ func evalStatus(inputStatus string) int {
 	remote_regex := regexp.MustCompile("^In .*")
 
 	switch status := inputStatus; {
-	case strings.Contains(status, "Mexico"):
+	case strings.Contains(status, "Mexico") || strings.Contains(status, "Mexican"):
 		calculated_value += 1000000
 	case strings.Contains(status, "Cayman Islands"):
 		calculated_value += 2000000

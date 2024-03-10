@@ -147,7 +147,7 @@ func evalStatus(inputStatus string) int {
 		calculated_value += 2000000
 	case strings.Contains(status, "Canada"):
 		calculated_value += 3000000
-	case strings.Contains(status, "Hawaii"):
+	case strings.Contains(status, "Hawaii") || strings.Contains(status, "Hawaiian"):
 		calculated_value += 4000000
 	case strings.Contains(status, "United Kingdom"):
 		calculated_value += 5000000
@@ -175,7 +175,7 @@ func evalStatus(inputStatus string) int {
 	}
 
 
-	if strings.Contains(inputStatus, "hospital") {
+	if (strings.Contains(inputStatus, "hospital") || strings.Contains(inputStatus, "jail")) {
 		var hosp_eval int = 3
 	
 		if strings.Contains(inputStatus, "hrs") {

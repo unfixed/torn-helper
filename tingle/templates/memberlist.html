@@ -33,7 +33,13 @@
     {{ end }}
 </tr>
 {{ range .members }}<tr class="flex-row">
-    <td><div class="grid place-items-left px-2"><div >{{.Name}}</div></div></td>
+    <td><div class="grid place-items-left px-2">
+        <div >
+            <a class="inline-flex hover:underline text-blue-600 dark:text-blue-500" href="https://www.torn.com/profiles.php?XID={{.UserId}}" target="_blank">
+                {{.Name}}
+            </a>
+        </div>
+    </div></td>
     <td><div class="grid place-items-center px-2"><div >{{.Level}}</div></div></td>
     <td><div class="grid place-items-center px-2 hover:underline" 
                 x-on:click="if(battlestats_map.has({{.UserId}})){battlestats_map.set({{.UserId}},!battlestats_map.get({{.UserId}}))}else{battlestats_map.set({{.UserId}},true)};console.log('clicked{{.UserId}}')" >

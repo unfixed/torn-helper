@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -115,16 +114,19 @@ type FactionMembers struct {
 }
 
 func getFactionBasicInfo(factionId string, apiKey string) {
+	// function queries torn api and gets basic info on faction
+	// from there it looks for ongoing ranked wars and calls
+	// functions to update info on war opponent and it's members
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
-	response, err := http.Get(URL)
-	if err != nil {
-		log.Fatalln(err)
+	response, err_getUrl := http.Get(URL)
+	if err_getUrl != nil {
+		log.Fatalln(err_getUrl)
 	}
 
-	responseBody, err := io.ReadAll(response.Body)
-	if err != nil {
-		log.Fatalln(err)
+	responseBody, err_read_responseBody := io.ReadAll(response.Body)
+	if err_read_responseBody != nil {
+		log.Fatalln(err_read_responseBody)
 	}
 
 	var data FactionBasicInfo
@@ -144,8 +146,8 @@ func getFactionBasicInfo(factionId string, apiKey string) {
 }
 
 func updateWar(warOpponent int, warStart int) {
+	//function updates War Opponent and War Start Time info.
 	fmt.Println("updateWar running")
-	// timeOffset := int64(warStart) - time.Now().Unix()
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -153,78 +155,49 @@ func updateWar(warOpponent int, warStart int) {
 		DB:       0,  // use default DB
 	})
 
-	startTime, err := rdb.Get(ctx, "warStartTime").Result()
-	if err == redis.Nil {
+	startTime, err_redisset_WarStartTime := rdb.Get(ctx, "warStartTime").Result()
+	if err_redisset_WarStartTime == redis.Nil {
 		fmt.Println("warStartTime missing, setting value...")
-		err := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
-		if err != nil {
-			panic(err)
+		err_redisset_WarStartTime := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
+		if err_redisset_WarStartTime != nil {
+			panic(err_redisset_WarStartTime)
 		}
 	}
 	if startTime < fmt.Sprintf("%d", warStart) {
 		fmt.Println("warStartTime is wrong, updating value...")
-		err := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
-		if err != nil {
-			panic(err)
+		err_redisset_WarStartTime := rdb.Set(ctx, "warStartTime", fmt.Sprintf("%d", warStart), 123*time.Hour).Err()
+		if err_redisset_WarStartTime != nil {
+			panic(err_redisset_WarStartTime)
 		}
 	}
-	opponent, err := rdb.Get(ctx, "warOpponent").Result()
-	if err == redis.Nil {
-		err := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
-		if err != nil {
-			panic(err)
+	opponent, err_redisget_WarOpponent := rdb.Get(ctx, "warOpponent").Result()
+	if err_redisget_WarOpponent == redis.Nil {
+		err_redisset_WarOpponent := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
+		if err_redisset_WarOpponent != nil {
+			panic(err_redisset_WarOpponent)
 		}
 	}
 	if opponent != fmt.Sprintf("%d", warOpponent) {
 		fmt.Println("warOpponent is wrong, updating value...")
-		err := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
-		if err != nil {
-			panic(err)
+		err_redisset_WarOpponent := rdb.Set(ctx, "warOpponent", fmt.Sprintf("%d", warOpponent), 123*time.Hour).Err()
+		if err_redisset_WarOpponent != nil {
+			panic(err_redisset_WarOpponent)
 		}
 	}
 }
-
-// func getUserStats(factionId string, apiKey string) {
-
-// 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
-// 	// fmt.Println(URL)
-// 	response, err := http.Get(URL)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	responseBody, err := io.ReadAll(response.Body)
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	var data FactionBasicInfo
-// 	json.Unmarshal(responseBody, &data)
-
-// 	var members []int
-// 	for i, m := range data.Members {
-// 		members = append(members, i)
-// 		// updateMember(factionId, i, m)
-// 		//updateMemberRedis(factionId, i, m)
-// 	}
-// 	updateFactionRedis(factionId, members)
-
-// 	// clean up memory after execution
-// 	defer response.Body.Close()
-// }
 
 func getFactionMembers(factionId string, apiKey string) {
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
 	// fmt.Println(URL)
-	response, err := http.Get(URL)
-	if err != nil {
-		log.Fatalln(err)
+	response, err_getUrl := http.Get(URL)
+	if err_getUrl != nil {
+		log.Fatalln(err_getUrl)
 	}
 
-	responseBody, err := io.ReadAll(response.Body)
-	if err != nil {
-		log.Fatalln(err)
+	responseBody, err_read_responseBody := io.ReadAll(response.Body)
+	if err_read_responseBody != nil {
+		log.Fatalln(err_read_responseBody)
 	}
 
 	var data FactionBasicInfo
@@ -235,7 +208,7 @@ func getFactionMembers(factionId string, apiKey string) {
 		members = append(members, i)
 		// updateMember(factionId, i, m)
 		// personalStats :=
-		updateMemberRedis(factionId, i, m, getSpyReport(i))
+		updateMemberRedis(i, m, getSpyReport(i))
 	}
 	updateFactionRedis(factionId, members)
 
@@ -255,39 +228,17 @@ func updateFactionRedis(factionId string, members []int) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
-	err := rdb.Set(ctx, factionId, factionMembers, 0).Err()
-	if err != nil {
-		panic(err)
+	err_redisset_factionMembers := rdb.Set(ctx, factionId, factionMembers, 0).Err()
+	if err_redisset_factionMembers != nil {
+		panic(err_redisset_factionMembers)
 	}
 
-}
-
-func evalStatus(inputStatus Status) int {
-	value := 1
-
-	switch {
-	case inputStatus.Description == "Okay":
-		return value
-	case strings.Contains(inputStatus.Description, "In hospital for"):
-		hosptime := strings.Fields(strings.Replace(inputStatus.Description, "In hospital for", "", 1))
-		_ = hosptime
-		//fmt.Println(hosptime)
-		// value =
-
-	}
-
-	// if inputStatus.Description == "Okay" {
-	// 	return value
-	// }
-	// if strings.Contains(inputStatus.Description,"")
-
-	return value
 }
 
 func (f FactionMember) MarshalBinary() ([]byte, error) {
 	return json.Marshal(f)
 }
-func updateMemberRedis(factionId string, userid int, member Member, spyReport SpyUserResponse) {
+func updateMemberRedis(userid int, member Member, spyReport SpyUserResponse) {
 
 	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
 
@@ -303,57 +254,52 @@ func updateMemberRedis(factionId string, userid int, member Member, spyReport Sp
 	facMember.StatusRaw = 0
 	facMember.Status_Long = member.Status.Details
 
-	p := message.NewPrinter(language.English)
+	printer := message.NewPrinter(language.English)
 	facMember.BattleStatsRaw = spyReport.Spy.Total
-	// facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
 	switch total := spyReport.Spy.Total; {
 	case total < 1000000:
-		facMember.BattleStats = p.Sprintf("%d", spyReport.Spy.Total)
-	case total <1000000000:
-		facMember.BattleStats = p.Sprintf("%.2fM", (float32(spyReport.Spy.Total)/1000000))
-	case total >=1000000000:
-		facMember.BattleStats = p.Sprintf("%.2fB", (float32(spyReport.Spy.Total)/1000000000))
+		facMember.BattleStats = printer.Sprintf("%d", spyReport.Spy.Total)
+	case total < 1000000000:
+		facMember.BattleStats = printer.Sprintf("%.2fM", (float32(spyReport.Spy.Total) / 1000000))
+	case total >= 1000000000:
+		facMember.BattleStats = printer.Sprintf("%.2fB", (float32(spyReport.Spy.Total) / 1000000000))
 	}
 
 	facMember.BattleStats_StrRaw = spyReport.Spy.Strength
-	// facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
 	switch strength := spyReport.Spy.Strength; {
 	case strength < 1000000:
-		facMember.BattleStats_Str = p.Sprintf("%d", spyReport.Spy.Strength)
-	case strength <1000000000:
-		facMember.BattleStats_Str = p.Sprintf("%.2fM", (float32(spyReport.Spy.Strength)/1000000))
-	case strength >=1000000000:
-		facMember.BattleStats_Str = p.Sprintf("%.2fB", (float32(spyReport.Spy.Strength)/1000000000))
+		facMember.BattleStats_Str = printer.Sprintf("%d", spyReport.Spy.Strength)
+	case strength < 1000000000:
+		facMember.BattleStats_Str = printer.Sprintf("%.2fM", (float32(spyReport.Spy.Strength) / 1000000))
+	case strength >= 1000000000:
+		facMember.BattleStats_Str = printer.Sprintf("%.2fB", (float32(spyReport.Spy.Strength) / 1000000000))
 	}
 	facMember.BattleStats_DefRaw = spyReport.Spy.Defense
-	// facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
 	switch defense := spyReport.Spy.Defense; {
 	case defense < 1000000:
-		facMember.BattleStats_Def = p.Sprintf("%d", spyReport.Spy.Defense)
-	case defense <1000000000:
-		facMember.BattleStats_Def = p.Sprintf("%.2fM", (float32(spyReport.Spy.Defense)/1000000))
-	case defense >=1000000000:
-		facMember.BattleStats_Def = p.Sprintf("%.2fB", (float32(spyReport.Spy.Defense)/1000000000))
+		facMember.BattleStats_Def = printer.Sprintf("%d", spyReport.Spy.Defense)
+	case defense < 1000000000:
+		facMember.BattleStats_Def = printer.Sprintf("%.2fM", (float32(spyReport.Spy.Defense) / 1000000))
+	case defense >= 1000000000:
+		facMember.BattleStats_Def = printer.Sprintf("%.2fB", (float32(spyReport.Spy.Defense) / 1000000000))
 	}
 	facMember.BattleStats_DexRaw = spyReport.Spy.Dexterity
-	// facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
 	switch dexterity := spyReport.Spy.Dexterity; {
 	case dexterity < 1000000:
-		facMember.BattleStats_Dex = p.Sprintf("%d", spyReport.Spy.Dexterity)
-	case dexterity <1000000000:
-		facMember.BattleStats_Dex = p.Sprintf("%.2fM", (float32(spyReport.Spy.Dexterity)/1000000))
-	case dexterity >=1000000000:
-		facMember.BattleStats_Dex = p.Sprintf("%.2fB", (float32(spyReport.Spy.Dexterity)/1000000000))
+		facMember.BattleStats_Dex = printer.Sprintf("%d", spyReport.Spy.Dexterity)
+	case dexterity < 1000000000:
+		facMember.BattleStats_Dex = printer.Sprintf("%.2fM", (float32(spyReport.Spy.Dexterity) / 1000000))
+	case dexterity >= 1000000000:
+		facMember.BattleStats_Dex = printer.Sprintf("%.2fB", (float32(spyReport.Spy.Dexterity) / 1000000000))
 	}
 	facMember.BattleStats_SpdRaw = spyReport.Spy.Speed
-	// facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
 	switch speed := spyReport.Spy.Speed; {
 	case speed < 1000000:
-		facMember.BattleStats_Spd = p.Sprintf("%d", spyReport.Spy.Speed)
-	case speed <1000000000:
-		facMember.BattleStats_Spd = p.Sprintf("%.2fM", (float32(spyReport.Spy.Speed)/1000000))
-	case speed >=1000000000:
-		facMember.BattleStats_Spd = p.Sprintf("%.2fB", (float32(spyReport.Spy.Speed)/1000000000))
+		facMember.BattleStats_Spd = printer.Sprintf("%d", spyReport.Spy.Speed)
+	case speed < 1000000000:
+		facMember.BattleStats_Spd = printer.Sprintf("%.2fM", (float32(spyReport.Spy.Speed) / 1000000))
+	case speed >= 1000000000:
+		facMember.BattleStats_Spd = printer.Sprintf("%.2fB", (float32(spyReport.Spy.Speed) / 1000000000))
 	}
 
 	rdb := redis.NewClient(&redis.Options{
@@ -373,15 +319,15 @@ func main() {
 	factionId := "46708"
 
 	// factionId := "30085"
-	tornApiKey, ok := os.LookupEnv("tornApiKey")
-	if !ok {
+	tornApiKey, ok_tornApiKey := os.LookupEnv("tornApiKey")
+	if !ok_tornApiKey {
 		fmt.Println("tornApiKey missing")
 		// fmt.Println(os.Environ())
 		// fmt.Println(factionId, tornApiKey)
 		os.Exit(1)
 	}
-	tornStatsApiKey, ok := os.LookupEnv("tornStatsApiKey")
-	if !ok {
+	tornStatsApiKey, ok_tornStatsApiKey := os.LookupEnv("tornStatsApiKey")
+	if !ok_tornStatsApiKey {
 		fmt.Println("tornStatsApiKey missing start")
 		// fmt.Println(os.Environ())
 		// fmt.Println(factionId, tornApiKey)

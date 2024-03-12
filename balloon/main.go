@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -17,6 +19,11 @@ import (
 )
 
 var ctx = context.Background()
+
+type ApiKey struct {
+	key   string
+	valid bool
+}
 
 type FactionBasicInfo struct {
 	ID            int               `json:"ID"`
@@ -117,6 +124,9 @@ func getFactionBasicInfo(factionId string, apiKey string) {
 	// function queries torn api and gets basic info on faction
 	// from there it looks for ongoing ranked wars and calls
 	// functions to update info on war opponent and it's members
+
+	fmt.Println("running FactionBasicInfo")
+	fmt.Printf("Current date and time is: %s\n", time.Now().String())
 
 	URL := fmt.Sprintf("https://api.torn.com/faction/%s?selections=basic&key=%s", factionId, apiKey)
 	response, err_getUrl := http.Get(URL)
@@ -314,21 +324,48 @@ func updateMemberRedis(userid int, member Member, spyReport SpyUserResponse) {
 
 }
 
+func runInstance(factionId string, apiKey ApiKey, waitGroup *sync.WaitGroup) {
+	defer waitGroup.Done()
+	for {
+		getFactionBasicInfo(factionId, apiKey.key)
+		if !apiKey.valid {
+			return
+		}
+		time.Sleep(30300 * time.Millisecond)
+	}
+}
+
 func main() {
 
-	factionId := "46708"
+	factionId := "8437"
 
 	// factionId := "30085"
-	tornApiKey, ok_tornApiKey := os.LookupEnv("tornApiKey")
-	if !ok_tornApiKey {
-		fmt.Println("tornApiKey missing")
+	// tornApiKey, ok_tornApiKey := os.LookupEnv("tornApiKey")
+	// if !ok_tornApiKey {
+	// 	fmt.Println("tornApiKey missing")
+	// 	os.Exit(1)
+	// }
+
+	tornApiKeysString, ok_tornApiKeysString := os.LookupEnv("tornApiKeys")
+	if !ok_tornApiKeysString {
+		fmt.Println("tornApiKeys missing")
 		os.Exit(1)
 	}
-	tornStatsApiKey, ok_tornStatsApiKey := os.LookupEnv("tornStatsApiKey")
-	if !ok_tornStatsApiKey {
-		fmt.Println("tornStatsApiKey missing start")
-		os.Exit(1)
+
+	tornApiKeys := strings.Split(tornApiKeysString, ":")
+	var keys []ApiKey
+	for _, tornKey := range tornApiKeys {
+		keys = append(keys, ApiKey{key: tornKey, valid: true})
 	}
-	_ = tornStatsApiKey
-	getFactionBasicInfo(factionId, tornApiKey)
+	// _ = tornApiKey
+
+	var waitGroup sync.WaitGroup
+
+	for _, key := range keys {
+
+		waitGroup.Add(1)
+		go runInstance(factionId, key, &waitGroup)
+		time.Sleep(10100 * time.Millisecond)
+	}
+	waitGroup.Wait()
 }

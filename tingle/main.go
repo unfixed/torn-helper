@@ -8,8 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/go-redis/redis/v8"
@@ -119,7 +119,6 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 		json.Unmarshal([]byte(result), &resultMember)
 		factionMembers[member] = resultMember
 
-
 	}
 
 	return factionMembers
@@ -128,12 +127,12 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 func evalStatus(inputStatus string) int {
 
 	if inputStatus == "Okay" {
-		return -1 
+		return -1
 	}
 	if inputStatus == "Fallen" {
 		return 99999999
 	}
-	
+
 	var calculated_value int = 0
 	secs_regex := regexp.MustCompile("([0-9]+) secs")
 	mins_regex := regexp.MustCompile("([0-9]+) mins")
@@ -143,13 +142,13 @@ func evalStatus(inputStatus string) int {
 	switch status := inputStatus; {
 	case strings.Contains(status, "Mexico") || strings.Contains(status, "Mexican"):
 		calculated_value += 1000000
-	case strings.Contains(status, "Cayman Islands"):
+	case strings.Contains(status, "Cayman Islands") || strings.Contains(status, "Caymanian"):
 		calculated_value += 2000000
-	case strings.Contains(status, "Canada"):
+	case strings.Contains(status, "Canada") || strings.Contains(status, "Canadian"):
 		calculated_value += 3000000
 	case strings.Contains(status, "Hawaii") || strings.Contains(status, "Hawaiian"):
 		calculated_value += 4000000
-	case strings.Contains(status, "United Kingdom"):
+	case strings.Contains(status, "United Kingdom") || strings.Contains(status, "British"):
 		calculated_value += 5000000
 	case strings.Contains(status, "Argentina") || strings.Contains(status, "Argentinian"):
 		calculated_value += 6000000
@@ -174,10 +173,9 @@ func evalStatus(inputStatus string) int {
 		calculated_value += 3
 	}
 
-
-	if (strings.Contains(inputStatus, "hospital") || strings.Contains(inputStatus, "jail")) {
+	if strings.Contains(inputStatus, "hospital") || strings.Contains(inputStatus, "jail") {
 		var hosp_eval int = 3
-	
+
 		if strings.Contains(inputStatus, "hrs") {
 			//hours
 			hrs_ticks, _ := strconv.Atoi(hrs_regex.FindStringSubmatch(inputStatus)[1])

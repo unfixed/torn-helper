@@ -322,15 +322,11 @@ func main() {
 	tornApiKey, ok_tornApiKey := os.LookupEnv("tornApiKey")
 	if !ok_tornApiKey {
 		fmt.Println("tornApiKey missing")
-		// fmt.Println(os.Environ())
-		// fmt.Println(factionId, tornApiKey)
 		os.Exit(1)
 	}
 	tornStatsApiKey, ok_tornStatsApiKey := os.LookupEnv("tornStatsApiKey")
 	if !ok_tornStatsApiKey {
 		fmt.Println("tornStatsApiKey missing start")
-		// fmt.Println(os.Environ())
-		// fmt.Println(factionId, tornApiKey)
 		os.Exit(1)
 	}
 	_ = tornStatsApiKey

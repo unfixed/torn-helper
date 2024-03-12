@@ -76,7 +76,7 @@ func getSpyReport(userId int) SpyUserResponse {
 	})
 	result, err := rdb.Get(ctx, fmt.Sprintf("spyreport_%d", userId)).Result()
 	if err == redis.Nil {
-		fmt.Println(fmt.Sprintf("get spy report for %d", userId))
+		fmt.Printf("get spy report for %d\n", userId)
 		URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/user/%d", apiKey, userId)
 		time.Sleep(1 * time.Second)
 		response, err := http.Get(URL)

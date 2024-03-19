@@ -337,7 +337,7 @@ func runInstance(factionId string, apiKey ApiKey, waitGroup *sync.WaitGroup) {
 
 func main() {
 
-	factionId := "8437"
+	factionId := "46708"
 
 	// factionId := "30085"
 	// tornApiKey, ok_tornApiKey := os.LookupEnv("tornApiKey")

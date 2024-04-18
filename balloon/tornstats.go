@@ -90,10 +90,12 @@ func getSpyReport(userId int) SpyUserResponse {
 		json.Unmarshal(responseBody, &spyReport)
 		defer response.Body.Close()
 
-		//push to cache
-		err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", userId), spyReport, time.Duration(rand.Intn(60)+10080)*time.Minute).Err()
-		if err != nil {
-			panic(err)
+		if spyReport.Status {
+			//push to cache
+			err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", userId), spyReport, time.Duration(rand.Intn(60)+10080)*time.Minute).Err()
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		return spyReport

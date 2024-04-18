@@ -164,6 +164,7 @@ func updateWar(warOpponent int, warStart int) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
 
 	startTime, err_redisset_WarStartTime := rdb.Get(ctx, "warStartTime").Result()
 	if err_redisset_WarStartTime == redis.Nil {
@@ -238,6 +239,8 @@ func updateFactionRedis(factionId string, members []int) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
+
 	err_redisset_factionMembers := rdb.Set(ctx, factionId, factionMembers, 0).Err()
 	if err_redisset_factionMembers != nil {
 		panic(err_redisset_factionMembers)
@@ -317,6 +320,8 @@ func updateMemberRedis(userid int, member Member, spyReport SpyUserResponse) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
+
 	err := rdb.Set(ctx, fmt.Sprintf("%d", userid), facMember, 0).Err()
 	if err != nil {
 		panic(err)

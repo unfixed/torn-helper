@@ -74,6 +74,8 @@ func getSpyReport(userId int) SpyUserResponse {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	defer rdb.Close()
+
 	result, err := rdb.Get(ctx, fmt.Sprintf("spyreport_%d", userId)).Result()
 	if err == redis.Nil {
 		fmt.Printf("get spy report for %d\n", userId)

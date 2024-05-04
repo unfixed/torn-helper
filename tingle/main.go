@@ -164,6 +164,8 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 func evalStatus(inputStatus string) int {
 
+	start = time.Now().UnixNano() / int64(time.Millisecond)
+
 	if inputStatus == "Okay" {
 		return -1
 	}
@@ -235,6 +237,12 @@ func evalStatus(inputStatus string) int {
 			hosp_eval += secs_ticks
 		}
 		calculated_value += hosp_eval
+	}
+
+	end = time.Now().UnixNano() / int64(time.Millisecond)
+	diff = end - start
+	if diff > 5 {
+		fmt.Printf("evalStatus took %d ms\n", diff)
 	}
 
 	return calculated_value

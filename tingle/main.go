@@ -471,7 +471,7 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
-	if diff > 5 {
+	if diff > 90 {
 		fmt.Printf("sortMembers took %d ms\n", diff)
 	}
 

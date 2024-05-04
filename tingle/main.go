@@ -249,6 +249,9 @@ func evalStatus(inputStatus string) int {
 }
 
 func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirection string) []FactionMember {
+
+	start := time.Now().UnixNano() / int64(time.Millisecond)
+
 	var factionMembers []FactionMember
 
 	evalLastStatus := map[string]int{"Offline": 0, "Idle": 1, "Online": 2}
@@ -429,6 +432,13 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 		highestIndex = 0
 
 	}
+
+	end := time.Now().UnixNano() / int64(time.Millisecond)
+	diff := end - start
+	if diff > 5 {
+		fmt.Printf("sortMembers took %d ms\n", diff)
+	}
+
 	return factionMembers
 }
 

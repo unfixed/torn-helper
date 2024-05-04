@@ -179,6 +179,9 @@ func evalStatus(inputStatus string) int {
 	hrs_regex := regexp.MustCompile("([0-9]+) hrs")
 	remote_regex := regexp.MustCompile("^In .*")
 
+
+	start_locationeval := time.Now().UnixNano() / int64(time.Millisecond)
+
 	switch status := inputStatus; {
 	case strings.Contains(status, "Mexico") || strings.Contains(status, "Mexican"):
 		calculated_value += 1000000
@@ -204,6 +207,11 @@ func evalStatus(inputStatus string) int {
 		calculated_value += 11000000
 	}
 
+	end_locationeval := time.Now().UnixNano() / int64(time.Millisecond)
+	diff_locationeval := end_locationeval - start_locationeval
+
+	start_flighteval := time.Now().UnixNano() / int64(time.Millisecond)
+
 	switch status := inputStatus; {
 	case strings.Contains(status, "Returning to Torn from "):
 		calculated_value += 1
@@ -212,6 +220,9 @@ func evalStatus(inputStatus string) int {
 	case strings.Contains(status, "Traveling to "):
 		calculated_value += 3
 	}
+	end_flighteval := time.Now().UnixNano() / int64(time.Millisecond)
+	diff_flighteval := end_flighteval - start_flighteval
+
 
 	start_hospeval := time.Now().UnixNano() / int64(time.Millisecond)
 
@@ -251,7 +262,12 @@ func evalStatus(inputStatus string) int {
 	diff_evalStatus := end_evalStatus - start_evalStatus
 	if diff_evalStatus > 5 {
 		fmt.Printf("evalStatus took %d ms\n", diff_evalStatus)
+		fmt.Printf("evalStatus.locationeval took %d ms\n", diff_locationeval)
+		fmt.Printf("evalStatus.flighteval took %d ms\n", diff_flighteval)
 		fmt.Printf("evalStatus.hosp_eval took %d ms\n", diff_hospeval)
+		
+		
+
 	}
 
 	return calculated_value

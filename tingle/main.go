@@ -251,7 +251,7 @@ func evalStatus(inputStatus string) int {
 	diff_evalStatus := end_evalStatus - start_evalStatus
 	if diff_evalStatus > 5 {
 		fmt.Printf("evalStatus took %d ms\n", diff_evalStatus)
-		fmt.Printf("evalStatus.hosp_eval took %d ms\n", diff_evalStatus)
+		fmt.Printf("evalStatus.hosp_eval took %d ms\n", diff_hospeval)
 	}
 
 	return calculated_value

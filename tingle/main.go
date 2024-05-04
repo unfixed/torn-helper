@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
+	"time"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -57,8 +57,7 @@ func checkForWar() bool {
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 
 	diff := end - start
-
-	fmt.printf("checkForWar query took %d ms", diff)
+	fmt.Printf("checkForWar query took %d ms", diff)
 
 
 	if err == redis.Nil {

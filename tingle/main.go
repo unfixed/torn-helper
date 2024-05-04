@@ -57,7 +57,10 @@ func checkForWar() bool {
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 
 	diff := end - start
-	fmt.Printf("checkForWar query took %d ms\n", diff)
+	if diff > 5 {
+		fmt.Printf("checkForWar query took %d ms\n", diff)
+	}
+	
 
 
 	if err == redis.Nil {
@@ -85,7 +88,9 @@ func getWarOpponent() (int, bool) {
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
-	fmt.Printf("getWarrOpponent query took %d ms\n", diff)
+	if diff > 5 {
+		fmt.Printf("getWarrOpponent query took %d ms\n", diff)
+	}
 
 	if err == redis.Nil {
 		return 0, false
@@ -116,7 +121,9 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
-	fmt.Printf("getOpponentMembers.factionId query took %d ms\n", diff)
+	if diff > 5 {
+		fmt.Printf("getOpponentMembers.factionId query took %d ms\n", diff)
+	}
 
 	if err == redis.Nil {
 		return nil
@@ -136,8 +143,10 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 		end = time.Now().UnixNano() / int64(time.Millisecond)
 		diff = end - start
-		fmt.Printf("getOpponentMembers.member query took %d ms\n", diff)
-
+		if diff > 5 {
+			fmt.Printf("getOpponentMembers.member query took %d ms\n", diff)
+		}
+con
 		if err == redis.Nil {
 			return nil
 		}

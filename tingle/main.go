@@ -57,7 +57,7 @@ func checkForWar() bool {
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 
 	diff := end - start
-	fmt.Printf("checkForWar query took %d ms", diff)
+	fmt.Printf("checkForWar query took %d ms\n", diff)
 
 
 	if err == redis.Nil {

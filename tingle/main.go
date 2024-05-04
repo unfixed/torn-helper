@@ -116,7 +116,7 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
-	fmt.Printf("getOpponentMembers query took %d ms\n", diff)
+	fmt.Printf("getOpponentMembers.factionId query took %d ms\n", diff)
 
 	if err == redis.Nil {
 		return nil
@@ -130,7 +130,14 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 	for _, member := range resultMembers.Members {
 
+		start = time.Now().UnixNano() / int64(time.Millisecond)
+
 		result, err := rdb.Get(ctx, fmt.Sprintf("%d", member)).Result()
+
+		end = time.Now().UnixNano() / int64(time.Millisecond)
+		diff = end - start
+		fmt.Printf("getOpponentMembers.member query took %d ms\n", diff)
+
 		if err == redis.Nil {
 			return nil
 		}

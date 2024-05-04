@@ -127,7 +127,7 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 	end := time.Now().UnixNano() / int64(time.Millisecond)
 	diff := end - start
 	if diff > 5 {
-		fmt.Printf("getOpponentMembers.factionId query took %d ms\n", diff)
+		fmt.Printf("getOpponentMembers.factionMembers query took %d ms\n", diff)
 	}
 
 	if err == redis.Nil {
@@ -139,6 +139,10 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 
 	var resultMembers FactionMembers
 	json.Unmarshal([]byte(result), &resultMembers)
+
+	if len(resultMembers.Members) < 1 {
+		fmt.Println("[WARNING] no faction members returned from getOpponentMembers.factionMembers query")
+	}
 
 	for _, member := range resultMembers.Members {
 

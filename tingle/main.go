@@ -72,6 +72,8 @@ func checkForWar() bool {
 
 func getWarOpponent() (int, bool) {
 
+	start := time.Now().UnixNano() / int64(time.Millisecond)
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -80,6 +82,11 @@ func getWarOpponent() (int, bool) {
 	defer rdb.Close()
 
 	response, err := rdb.Get(ctx, "warOpponent").Result()
+
+	end := time.Now().UnixNano() / int64(time.Millisecond)
+	diff := end - start
+	fmt.Printf("getWarrOpponent query took %d ms\n", diff)
+
 	if err == redis.Nil {
 		return 0, false
 	}
@@ -96,6 +103,8 @@ func getWarOpponent() (int, bool) {
 func getOpponentMembers(factionId int) map[int]FactionMember {
 	factionMembers := make(map[int]FactionMember)
 
+	start := time.Now().UnixNano() / int64(time.Millisecond)
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -104,6 +113,11 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 	defer rdb.Close()
 
 	result, err := rdb.Get(ctx, fmt.Sprintf("%d", factionId)).Result()
+
+	end := time.Now().UnixNano() / int64(time.Millisecond)
+	diff := end - start
+	fmt.Printf("getOpponentMembers query took %d ms\n", diff)
+
 	if err == redis.Nil {
 		return nil
 	}

@@ -44,6 +44,7 @@ var ctx = context.Background()
 
 func checkForWar() bool {
 
+	start := time.Now().UnixNano() / int64(time.Millisecond)
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -51,14 +52,23 @@ func checkForWar() bool {
 	})
 	defer rdb.Close()
 
+	
 	_, err := rdb.Get(ctx, "warStartTime").Result()
+
+	end := time.Now().UnixNano() / int64(time.Millisecond)
+
+	diff := end - start
+
+	fmt.printf("checkForWar query took %d ms", diff)
+
+
 	if err == redis.Nil {
 		return false
 	}
 	if err != nil {
 		panic(err)
 	}
-	return true
+	return true	
 
 }
 

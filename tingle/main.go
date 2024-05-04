@@ -141,7 +141,25 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 	json.Unmarshal([]byte(result), &resultMembers)
 
 	if len(resultMembers.Members) < 1 {
-		fmt.Println("[WARNING] no faction members returned from getOpponentMembers.factionMembers query")
+		fmt.Println("[WARNING] no faction members returned from getOpponentMembers.factionMembers query, trying fallback")
+		start_fallback := time.Now().UnixNano() / int64(time.Millisecond)
+	
+		result_fallback, err_fallback := rdb.Get(ctx, fmt.Sprintf("fallback_%d", factionId)).Result()
+	
+		end_fallback := time.Now().UnixNano() / int64(time.Millisecond)
+		diff_fallback := end_fallback - start_fallback
+		if diff_fallback > 5 {
+			fmt.Printf("getOpponentMembers.factionMembers fallback query took %d ms\n", diff_fallback)
+		}
+		if err_fallback == redis.Nil {
+			return nil
+		}
+		if err_fallback != nil {
+			panic(err_fallback)
+		}
+	
+		var resultMembers FactionMembers
+		json.Unmarshal([]byte(result_fallback), &resultMembers)
 	}
 
 	for _, member := range resultMembers.Members {

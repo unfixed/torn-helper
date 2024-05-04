@@ -146,7 +146,7 @@ func getOpponentMembers(factionId int) map[int]FactionMember {
 		if diff > 5 {
 			fmt.Printf("getOpponentMembers.member query took %d ms\n", diff)
 		}
-con
+
 		if err == redis.Nil {
 			return nil
 		}

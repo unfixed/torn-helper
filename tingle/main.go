@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"github.com/go-redis/redis/v8"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type FactionMember struct {

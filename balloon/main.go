@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )

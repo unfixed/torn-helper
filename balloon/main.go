@@ -244,7 +244,11 @@ func updateFactionRedis(factionId string, members []int) {
 	if err_redisset_factionMembers != nil {
 		panic(err_redisset_factionMembers)
 	}
-
+	
+	err_redisset_fallbackfactionMembers := rdb.Set(ctx, fmt.Sprintf(fallback_%s, factionId), factionMembers, 0).Err()
+	if err_redisset_fallbackfactionMembers != nil {
+		panic(err_redisset_fallbackfactionMembers)
+	}
 }
 
 func (f FactionMember) MarshalBinary() ([]byte, error) {

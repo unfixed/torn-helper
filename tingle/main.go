@@ -40,6 +40,11 @@ type FactionMembers struct {
 }
 
 var ctx = context.Background()
+var secs_regex *regexp.Regexp = regexp.MustCompile("([0-9]+) secs")
+var mins_regex *regexp.Regexp = regexp.MustCompile("([0-9]+) mins")
+var hrs_regex *regexp.Regexp = regexp.MustCompile("([0-9]+) hrs")
+var remote_regex *regexp.Regexp = regexp.MustCompile("^In .*")
+
 
 func checkForWar() bool {
 
@@ -175,15 +180,15 @@ func evalStatus(inputStatus string) int {
 
 	var calculated_value int = 0
 
-	start_regexcompile := time.Now().UnixNano() / int64(time.Millisecond)
+	// start_regexcompile := time.Now().UnixNano() / int64(time.Millisecond)
 
-	secs_regex := regexp.MustCompile("([0-9]+) secs")
-	mins_regex := regexp.MustCompile("([0-9]+) mins")
-	hrs_regex := regexp.MustCompile("([0-9]+) hrs")
-	remote_regex := regexp.MustCompile("^In .*")
+	// // secs_regex := regexp.MustCompile("([0-9]+) secs")
+	// // mins_regex := regexp.MustCompile("([0-9]+) mins")
+	// // hrs_regex := regexp.MustCompile("([0-9]+) hrs")
+	// // remote_regex := regexp.MustCompile("^In .*")
 
-	end_regexcompile := time.Now().UnixNano() / int64(time.Millisecond)
-	diff_regexcompile := end_regexcompile - start_regexcompile
+	// end_regexcompile := time.Now().UnixNano() / int64(time.Millisecond)
+	// diff_regexcompile := end_regexcompile - start_regexcompile
 
 	start_locationeval := time.Now().UnixNano() / int64(time.Millisecond)
 
@@ -267,7 +272,7 @@ func evalStatus(inputStatus string) int {
 	diff_evalStatus := end_evalStatus - start_evalStatus
 	if diff_evalStatus > 5 {
 		fmt.Printf("evalStatus took %d ms\n", diff_evalStatus)
-		fmt.Printf("evalStatus.regexcompile took %d ms\n", diff_regexcompile)
+		// fmt.Printf("evalStatus.regexcompile took %d ms\n", diff_regexcompile)
 		fmt.Printf("evalStatus.locationeval took %d ms\n", diff_locationeval)
 		fmt.Printf("evalStatus.flighteval took %d ms\n", diff_flighteval)
 		fmt.Printf("evalStatus.hosp_eval took %d ms\n", diff_hospeval)

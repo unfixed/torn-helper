@@ -289,6 +289,50 @@ func evalStatus(inputStatus string) int {
 	return calculated_value
 }
 
+func filterMembers(inputMembers map[int]FactionMember, filterBy string) map[int]FactionMember {
+	factionMembers := make(map[int]FactionMember)
+	fmt.Println(filterBy)
+	for k, m := range inputMembers {
+		if filterBy=="" {
+			factionMembers[k] = m
+		} else if (filterBy=="Mexico" && (strings.Contains(m.Status, "Mexico") || strings.Contains(m.Status, "Mexican"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="CaymanIslands" && (strings.Contains(m.Status, "Cayman Islands") || strings.Contains(m.Status, "Caymanian"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="Canada" && (strings.Contains(m.Status, "Canada") || strings.Contains(m.Status, "Canadian"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="Hawaii" && (strings.Contains(m.Status, "Hawaii") || strings.Contains(m.Status, "Hawaiian"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="UnitedKingdom" && (strings.Contains(m.Status, "United Kingdom") || strings.Contains(m.Status, "British"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="Argentina" && (strings.Contains(m.Status, "Argentina") || strings.Contains(m.Status, "Argentinian"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="Switzerland" && (strings.Contains(m.Status, "Switzerland") || strings.Contains(m.Status, "Swiss"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="Japan" && (strings.Contains(m.Status, "Japan") || strings.Contains(m.Status, "Japanese"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="China" && (strings.Contains(m.Status, "China") || strings.Contains(m.Status, "Chinese"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="UAE" && (strings.Contains(m.Status, "UAE") || strings.Contains(m.Status, "Emirati"))) {
+			factionMembers[k] = m
+
+		} else if (filterBy=="SouthAfrica" && (strings.Contains(m.Status, "South Africa") || strings.Contains(m.Status, "South African"))) {
+			factionMembers[k] = m
+		}
+	}
+
+	return factionMembers
+}
+	
 func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirection string) []FactionMember {
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
@@ -509,10 +553,11 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 func viewIndex(w http.ResponseWriter, r *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
-
+	
+	filterBy := r.URL.Query().Get("filterby")
 	sortBy := r.URL.Query().Get("sortby")
 	sortDirection := r.URL.Query().Get("sortdirection")
-	ctx := map[string]any{"sortBy": sortBy, "sortDirection": sortDirection}
+	ctx := map[string]any{"filterBy": filterBy, "sortBy": sortBy, "sortDirection": sortDirection}
 
 	tmpl.Execute(w, ctx)
 }
@@ -537,9 +582,10 @@ func viewMemberList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filterBy := r.URL.Query().Get("filterby")
 	sortBy := r.URL.Query().Get("sortby")
 	sortDirection := r.URL.Query().Get("sortdirection")
-	ctx := map[string]any{"members": sortMembers(getOpponentMembers(warOpponent), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection}
+	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(warOpponent), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection}
 
 	tmpl.Execute(w, ctx)
 }

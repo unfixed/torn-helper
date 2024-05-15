@@ -14,23 +14,45 @@
         
         <div class="overflow-x-autoflex flex-col lg:justify-center">
             <div class="flex justify-center"><p>Torn caches api calls for ~30 seconds. So that's about how old the data below might be.</p></div>
+            <div class="flex justify-center">
+                <form action="/" method="GET">
+                    <div class="flex-col p-2">
+                        <div>
+                            <label>Sort By:</label>
+                            <select  name="sortby" onchange="this.form.submit()">
+                                <option {{ if eq .sortBy "Status" }} selected {{ end }}value="Status">Current Status</option>
+                                <option {{ if eq .sortBy "Name" }} selected {{ end }} value="Name">Name</option>
+                                <option {{ if eq .sortBy "Level" }} selected {{ end }}value="Level">Level</option>
+                                <option {{ if eq .sortBy "BattleStats" }} selected {{ end }}value="BattleStats">BattleStats</option>
+                                <option {{ if eq .sortBy "LastStatus" }} selected {{ end }}value="LastStatus">Online Status</option>
+                            </select>
+                            <select  name="sortdirection" onchange="this.form.submit()">
+                                <option {{ if eq .sortDirection "asc" }} selected {{ end }} value="asc">&uarr;</option>
+                                <option {{ if eq .sortDirection "dsc" }} selected {{ end }} value="dsc">&darr;</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Filter By:</label>
+                            <select  name="filterby" onchange="this.form.submit()">
+                                <option {{ if eq .filterBy "" }} selected {{ end }}value="">All</option>
+                                <option {{ if eq .filterBy "Mexico" }} selected {{ end }} value="Mexico">Mexico</option>
+                                <option {{ if eq .filterBy "CaymanIslands" }} selected {{ end }}value="CaymanIslands">Cayman Islands</option>
+                                <option {{ if eq .filterBy "Canada" }} selected {{ end }}value="Canada">Canada</option>
+                                <option {{ if eq .filterBy "Hawaii" }} selected {{ end }}value="Hawaii">Hawaii</option>
+                                <option {{ if eq .filterBy "UnitedKingdom" }} selected {{ end }}value="UnitedKingdom">United Kingdom</option>
+                                <option {{ if eq .filterBy "Argentina" }} selected {{ end }}value="Argentina">Argentina</option>
+                                <option {{ if eq .filterBy "Switzerland" }} selected {{ end }}value="Switzerland">Switzerland</option>
+                                <option {{ if eq .filterBy "Japan" }} selected {{ end }}value="Japan">Japan</option>
+                                <option {{ if eq .filterBy "China" }} selected {{ end }}value="China">China</option>
+                                <option {{ if eq .filterBy "UAE" }} selected {{ end }}value="UAE">UAE</option>
+                                <option {{ if eq .filterBy "SouthAfrica" }} selected {{ end }}value="SouthAfrica">South Africa</option>
+                            </select>
+                        </div>
+                    </div>  
+                </form>
+            </div>
 
-
-            <form action="/" method="GET">
-                <label>Sort By:</label>
-                <select  name="sortby" onchange="this.form.submit()">
-                    <option {{ if eq .sortBy "Status" }} selected {{ end }}value="Status">Current Status</option>
-                    <option {{ if eq .sortBy "Name" }} selected {{ end }} value="Name">Name</option>
-                    <option {{ if eq .sortBy "Level" }} selected {{ end }}value="Level">Level</option>
-                    <option {{ if eq .sortBy "BattleStats" }} selected {{ end }}value="BattleStats">BattleStats</option>
-                    <option {{ if eq .sortBy "LastStatus" }} selected {{ end }}value="LastStatus">Online Status</option>
-                </select>
-                <select  name="sortdirection" onchange="this.form.submit()">
-                    <option {{ if eq .sortDirection "asc" }} selected {{ end }} value="asc">&uarr;</option>
-                    <option {{ if eq .sortDirection "dsc" }} selected {{ end }} value="dsc">&darr;</option>
-                </select>
-            </form>
-            <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
+            <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?filterby={{.filterBy}}&sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
         </div>
         <svg hidden style="display: none" class="my-icon my-icon-lock" aria-hidden="true" focusable="false" width="24px" height="24px" viewBox="0 0 24 24">
             <symbol id="attack_icon">

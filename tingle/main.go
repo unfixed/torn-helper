@@ -299,14 +299,25 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 
 	temp := inputMembers
 	var highestStats FactionMember
-	var highestIndex int = -1
+	var highestIndex int
 	var highestStatsStatusEval int
 	var mStatusEval int
+	var firstRun bool
+
 	size := len(temp)
 	for i := 1; i < size; i++ {
+		firstRun = true
 		for k, m := range temp {
+			if firstRun {
+				highestIndex = k
+				highestStats = m
+				firstRun = false
+			}
+
 			highestStatsStatusEval = evalStatus(highestStats.Status)
 			mStatusEval = evalStatus(m.Status)
+			
+
 			switch sortBy {
 			case "Status":
 				if sortDirection == "asc" {

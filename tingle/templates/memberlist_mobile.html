@@ -1,0 +1,61 @@
+
+
+
+
+{{ range .members }}
+<div class="flex p-1">
+    <div class="rounded-md bg-gray-200 p-2 flex-col">
+        <div class="flex-row">
+            <div class="inline-flex px-1">
+                <a class="hover:underline text-blue-600 dark:text-blue-500 font-medium" href="https://www.torn.com/profiles.php?XID={{.UserId}}" target="_blank">
+                    {{ .Name }}
+                </a>
+            </div>
+            <div class="inline-flex px-1">
+                Lvl. {{ .Level }}
+            </div>
+            <div class="inline-flex px-1">
+                {{ if eq .BattleStats "0" }}
+                <div class="grid place-items-center px-2 hover:underline" >N/A</div>
+                {{ else }}
+                <div class="grid place-items-center px-2 hover:underline" 
+                        x-on:click="if(battlestats_map.has({{.UserId}})){battlestats_map.set({{.UserId}},!battlestats_map.get({{.UserId}}))}else{battlestats_map.set({{.UserId}},true)};console.log('clicked{{.UserId}}')" >
+                    <div {{ if ge .BattleStatsRaw 1000000000}} class="rounded-md px-2 bg-red-100 text-red-800"{{ end }}
+                    {{ if and (lt .BattleStatsRaw 1000000000) (ge .BattleStatsRaw 200000000)}} class="rounded-md px-2 bg-orange-100 text-orange-600" {{ end }}
+                    {{ if and (lt .BattleStatsRaw 200000000) (ge .BattleStatsRaw 25000000)}} class="rounded-md px-2 bg-blue-100 text-blue-600" {{ end }}
+                    {{ if and (lt .BattleStatsRaw 25000000) (ge .BattleStatsRaw 1000000)}} class="rounded-md px-2 bg-purple-100 text-purple-600" {{ end }}
+                    {{ if lt .BattleStatsRaw 1000000 }} class="rounded-md px-2 bg-green-100 text-green-600" {{ end }}
+                    >{{.BattleStats}}</div>
+                    <div x-transition x-show="battlestats_map.get({{.UserId}})" class="no-underline flex flex-col">
+                        <div>STR: {{.BattleStats_Str}}</div><div>DEF: {{.BattleStats_Def}}</div><div>SPD: {{.BattleStats_Spd}}</div><div>DEX: {{.BattleStats_Dex}}</div>
+                    </div>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+
+
+        <div class="flex-row">
+            <div class="inline-flex px-1">
+                <div class="font-medium rounded-md p-1 {{ if eq .LastStatus "Online"}} bg-green-100 text-green-600 dark:text-green-500{{ else if eq .LastStatus "Idle" }} bg-orange-100 text-orange-600 dark:text-orange-500 {{ else if eq .LastStatus "Offline" }} bg-red-100 text-red-600 dark:text-red-500 {{ end }} hover:underline text-center">
+                    {{.LastStatus}}    
+                </div>
+            </div>
+            <div class="inline-flex px-1">
+                <div >{{.LastSeen}}</div>
+            </div>
+        </div>
+
+
+        <div class="flex-row">
+            <div class="inline-flex px-1">
+                <div class="inline-flex px-2 {{ if eq .Status "Okay" }} font-medium text-green-600 dark:text-green-500 {{ end }} pr-5">
+                    {{.Status}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{ end }}

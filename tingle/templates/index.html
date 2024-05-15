@@ -14,6 +14,20 @@
         
         <div class="overflow-x-autoflex flex-col lg:justify-center">
             <div class="flex justify-center"><p>Torn caches api calls for ~30 seconds. So that's about how old the data below might be.</p></div>
+
+            <label>Sort By:</label>
+            <select  name="sortby">
+                <option {{ if eq .sortBy "Status" }} selected {{ end }}value="Status">Current Status</option>
+                <option {{ if eq .sortBy "Name" }} selected {{ end }} value="Name">Name</option>
+                <option {{ if eq .sortBy "Level" }} selected {{ end }}value="Level">Level</option>
+                <option {{ if eq .sortBy "BattleStats" }} selected {{ end }}value="BattleStats">BattleStats</option>
+                <option {{ if eq .sortBy "LastStatus" }} selected {{ end }}value="LastStatus">Online Status</option>
+            </select>
+            <select  name="sortdirection">
+                <option {{ if eq .sortDirection "asc" }} selected {{ end }} value="asc">&uarr;</option>
+                <option {{ if eq .sortDirection "dsc" }} selected {{ end }} value="dsc">&darr;</option>
+            </select>
+
             <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
         </div>
         <svg hidden style="display: none" class="my-icon my-icon-lock" aria-hidden="true" focusable="false" width="24px" height="24px" viewBox="0 0 24 24">

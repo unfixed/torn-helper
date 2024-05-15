@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/houseme/mobiledetect/ua"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -506,7 +507,15 @@ func viewIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func viewMemberList(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/memberlist.html"))
+	var templateFile string
+	ua := ua.New(r.Header.Get("User-Agent"))
+	if ua.Mobile() {
+		fmt.Println("Mobile Client Found")
+		templateFile = "templates/memberlist_mobile.html"
+	} else {
+		templateFile = "templates/memberlist.html"
+	}
+	tmpl := template.Must(template.ParseFiles(templateFile))
 	if !checkForWar() {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -523,6 +532,8 @@ func viewMemberList(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.Execute(w, ctx)
 }
+
+
 
 func main() {
 

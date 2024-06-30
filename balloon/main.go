@@ -141,6 +141,15 @@ func getFactionBasicInfo(factionId string, apiKey string) {
 	var data FactionBasicInfo
 	json.Unmarshal(responseBody, &data)
 
+	var members []int
+	for i, m := range data.Members {
+		members = append(members, i)
+		// updateMember(factionId, i, m)
+		// personalStats :=
+		updateMemberRedis(i, m, getSpyReport(i))
+	}
+	updateFactionRedis(factionId, members)
+
 	for _, rankedwar := range data.RankedWars {
 		for facId, _ := range rankedwar.Factions {
 			if fmt.Sprint(facId) != factionId {
@@ -244,7 +253,7 @@ func updateFactionRedis(factionId string, members []int) {
 	if err_redisset_factionMembers != nil {
 		panic(err_redisset_factionMembers)
 	}
-	
+
 	err_redisset_fallbackfactionMembers := rdb.Set(ctx, fmt.Sprintf("fallback_%s", factionId), factionMembers, 0).Err()
 	if err_redisset_fallbackfactionMembers != nil {
 		panic(err_redisset_fallbackfactionMembers)

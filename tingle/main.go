@@ -12,8 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/houseme/mobiledetect/ua"
+
 	"github.com/go-redis/redis/v8"
+	"github.com/houseme/mobiledetect/ua"
 )
 
 type FactionMember struct {
@@ -46,7 +47,6 @@ var mins_regex *regexp.Regexp = regexp.MustCompile("([0-9]+) mins")
 var hrs_regex *regexp.Regexp = regexp.MustCompile("([0-9]+) hrs")
 var remote_regex *regexp.Regexp = regexp.MustCompile("^In .*")
 
-
 func checkForWar() bool {
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
@@ -57,7 +57,6 @@ func checkForWar() bool {
 	})
 	defer rdb.Close()
 
-
 	_, err := rdb.Get(ctx, "warStartTime").Result()
 
 	end := time.Now().UnixNano() / int64(time.Millisecond)
@@ -67,15 +66,13 @@ func checkForWar() bool {
 		fmt.Printf("checkForWar query took %d ms\n", diff)
 	}
 
-
-
 	if err == redis.Nil {
 		return false
 	}
 	if err != nil {
 		panic(err)
 	}
-	return true	
+	return true
 
 }
 
@@ -238,7 +235,6 @@ func evalStatus(inputStatus string) int {
 	end_flighteval := time.Now().UnixNano() / int64(time.Millisecond)
 	diff_flighteval := end_flighteval - start_flighteval
 
-
 	start_hospeval := time.Now().UnixNano() / int64(time.Millisecond)
 
 	if strings.Contains(inputStatus, "hospital") || strings.Contains(inputStatus, "jail") {
@@ -269,10 +265,6 @@ func evalStatus(inputStatus string) int {
 	end_hospeval := time.Now().UnixNano() / int64(time.Millisecond)
 	diff_hospeval := end_hospeval - start_hospeval
 
-
-
-
-
 	end_evalStatus := time.Now().UnixNano() / int64(time.Millisecond)
 	diff_evalStatus := end_evalStatus - start_evalStatus
 	if diff_evalStatus > 5 {
@@ -282,8 +274,6 @@ func evalStatus(inputStatus string) int {
 		fmt.Printf("evalStatus.flighteval took %d ms\n", diff_flighteval)
 		fmt.Printf("evalStatus.hosp_eval took %d ms\n", diff_hospeval)
 
-
-
 	}
 
 	return calculated_value
@@ -291,48 +281,47 @@ func evalStatus(inputStatus string) int {
 
 func filterMembers(inputMembers map[int]FactionMember, filterBy string) map[int]FactionMember {
 	factionMembers := make(map[int]FactionMember)
-	fmt.Println(filterBy)
 	for k, m := range inputMembers {
-		if filterBy=="" {
+		if filterBy == "" {
 			factionMembers[k] = m
-		} else if (filterBy=="Mexico" && (strings.Contains(m.Status, "Mexico") || strings.Contains(m.Status, "Mexican"))) {
-			factionMembers[k] = m
-
-		} else if (filterBy=="CaymanIslands" && (strings.Contains(m.Status, "Cayman Islands") || strings.Contains(m.Status, "Caymanian"))) {
+		} else if filterBy == "Mexico" && (strings.Contains(m.Status, "Mexico") || strings.Contains(m.Status, "Mexican")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="Canada" && (strings.Contains(m.Status, "Canada") || strings.Contains(m.Status, "Canadian"))) {
+		} else if filterBy == "CaymanIslands" && (strings.Contains(m.Status, "Cayman Islands") || strings.Contains(m.Status, "Caymanian")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="Hawaii" && (strings.Contains(m.Status, "Hawaii") || strings.Contains(m.Status, "Hawaiian"))) {
+		} else if filterBy == "Canada" && (strings.Contains(m.Status, "Canada") || strings.Contains(m.Status, "Canadian")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="UnitedKingdom" && (strings.Contains(m.Status, "United Kingdom") || strings.Contains(m.Status, "British"))) {
+		} else if filterBy == "Hawaii" && (strings.Contains(m.Status, "Hawaii") || strings.Contains(m.Status, "Hawaiian")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="Argentina" && (strings.Contains(m.Status, "Argentina") || strings.Contains(m.Status, "Argentinian"))) {
+		} else if filterBy == "UnitedKingdom" && (strings.Contains(m.Status, "United Kingdom") || strings.Contains(m.Status, "British")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="Switzerland" && (strings.Contains(m.Status, "Switzerland") || strings.Contains(m.Status, "Swiss"))) {
+		} else if filterBy == "Argentina" && (strings.Contains(m.Status, "Argentina") || strings.Contains(m.Status, "Argentinian")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="Japan" && (strings.Contains(m.Status, "Japan") || strings.Contains(m.Status, "Japanese"))) {
+		} else if filterBy == "Switzerland" && (strings.Contains(m.Status, "Switzerland") || strings.Contains(m.Status, "Swiss")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="China" && (strings.Contains(m.Status, "China") || strings.Contains(m.Status, "Chinese"))) {
+		} else if filterBy == "Japan" && (strings.Contains(m.Status, "Japan") || strings.Contains(m.Status, "Japanese")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="UAE" && (strings.Contains(m.Status, "UAE") || strings.Contains(m.Status, "Emirati"))) {
+		} else if filterBy == "China" && (strings.Contains(m.Status, "China") || strings.Contains(m.Status, "Chinese")) {
 			factionMembers[k] = m
 
-		} else if (filterBy=="SouthAfrica" && (strings.Contains(m.Status, "South Africa") || strings.Contains(m.Status, "South African"))) {
+		} else if filterBy == "UAE" && (strings.Contains(m.Status, "UAE") || strings.Contains(m.Status, "Emirati")) {
+			factionMembers[k] = m
+
+		} else if filterBy == "SouthAfrica" && (strings.Contains(m.Status, "South Africa") || strings.Contains(m.Status, "South African")) {
 			factionMembers[k] = m
 		}
 	}
 
 	return factionMembers
 }
-	
+
 func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirection string) []FactionMember {
 
 	start := time.Now().UnixNano() / int64(time.Millisecond)
@@ -360,7 +349,6 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 
 			highestStatsStatusEval = evalStatus(highestStats.Status)
 			mStatusEval = evalStatus(m.Status)
-			
 
 			switch sortBy {
 			case "Status":
@@ -553,7 +541,7 @@ func sortMembers(inputMembers map[int]FactionMember, sortBy string, sortDirectio
 func viewIndex(w http.ResponseWriter, r *http.Request) {
 
 	tmpl := template.Must(template.ParseFiles("templates/index.html"))
-	
+
 	filterBy := r.URL.Query().Get("filterby")
 	sortBy := r.URL.Query().Get("sortby")
 	sortDirection := r.URL.Query().Get("sortdirection")
@@ -562,6 +550,17 @@ func viewIndex(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, ctx)
 }
 
+func viewWhereAreWe(w http.ResponseWriter, r *http.Request) {
+
+	tmpl := template.Must(template.ParseFiles("templates/whereAreWe.html"))
+
+	filterBy := r.URL.Query().Get("filterby")
+	sortBy := r.URL.Query().Get("sortby")
+	sortDirection := r.URL.Query().Get("sortdirection")
+	ctx := map[string]any{"filterBy": filterBy, "sortBy": sortBy, "sortDirection": sortDirection}
+
+	tmpl.Execute(w, ctx)
+}
 func viewMemberList(w http.ResponseWriter, r *http.Request) {
 	var templateFile string
 	ua := ua.New(r.Header.Get("User-Agent"))
@@ -590,12 +589,35 @@ func viewMemberList(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, ctx)
 }
 
+func viewOurMemberList(w http.ResponseWriter, r *http.Request) {
+	var templateFile string
+	ua := ua.New(r.Header.Get("User-Agent"))
+	if ua.Mobile() {
+		fmt.Println("Mobile Client Found")
+		templateFile = "templates/memberlist_mobile.html"
+	} else {
+		templateFile = "templates/memberlist.html"
+	}
+	tmpl := template.Must(template.ParseFiles(templateFile))
+	if !checkForWar() {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 
+	filterBy := r.URL.Query().Get("filterby")
+	sortBy := r.URL.Query().Get("sortby")
+	sortDirection := r.URL.Query().Get("sortdirection")
+	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(46708), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection}
+
+	tmpl.Execute(w, ctx)
+}
 
 func main() {
 
 	http.HandleFunc("/", viewIndex)
+	http.HandleFunc("/revenant", viewWhereAreWe)
 	http.HandleFunc("/memberlist", viewMemberList)
+	http.HandleFunc("/ourmemberlist", viewOurMemberList)
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 

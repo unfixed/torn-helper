@@ -16,7 +16,7 @@
             <div class="flex justify-center"><p>Torn caches api calls for ~30 seconds. So that's about how old the data below might be.</p></div>
             <div class="flex justify-center flex-row">
                 <div>
-                    <form action="/" method="GET">
+                    <form action="/revenant" method="GET">
                         <div class="flex-col p-2">
                             <div>
                                 <label>Sort By:</label>
@@ -53,16 +53,16 @@
                     </form>
                 </div>
                 <div class="flex-col">
-                    <div class="bg-red-100 p-1">
+                    <div class="bg-red-100 p-1 rounded-md">
                         <a href="/">Where Are They?</a>
                     </div>
-                    <div class="bg-green-100 p-1">
+                    <div class="bg-green-100 p-1 rounded-md">
                         <a href="/revenant">Where Are We</a>
                     </div>
                 </div>
             </div>
 
-            <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/memberlist?filterby={{.filterBy}}&sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 3s" hx-swap="innerHTML"></div>
+            <div x-ref="mytable" x-init="battlestats_map = new Map();" class="" hx-get="/ourmemberlist?filterby={{.filterBy}}&sortby={{.sortBy}}&sortdirection={{.sortDirection}}" hx-trigger="load, every 300s" hx-swap="innerHTML"></div>
         </div>
         <svg hidden style="display: none" class="my-icon my-icon-lock" aria-hidden="true" focusable="false" width="24px" height="24px" viewBox="0 0 24 24">
             <symbol id="attack_icon">

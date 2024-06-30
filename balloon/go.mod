@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/mattn/go-sqlite3 v1.14.19
 	golang.org/x/text v0.3.6
 )
 

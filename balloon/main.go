@@ -151,7 +151,7 @@ func getFactionBasicInfo(factionId string, apiKey string) {
 	updateFactionRedis(factionId, members)
 
 	for _, rankedwar := range data.RankedWars {
-		for facId, _ := range rankedwar.Factions {
+		for facId := range rankedwar.Factions {
 			if fmt.Sprint(facId) != factionId {
 				updateWar(facId, rankedwar.War.Start)
 				getFactionMembers(fmt.Sprint(facId), apiKey)

@@ -584,7 +584,7 @@ func viewMemberList(w http.ResponseWriter, r *http.Request) {
 	filterBy := r.URL.Query().Get("filterby")
 	sortBy := r.URL.Query().Get("sortby")
 	sortDirection := r.URL.Query().Get("sortdirection")
-	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(warOpponent), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection}
+	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(warOpponent), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection, "path": ""}
 
 	tmpl.Execute(w, ctx)
 }
@@ -607,7 +607,7 @@ func viewOurMemberList(w http.ResponseWriter, r *http.Request) {
 	filterBy := r.URL.Query().Get("filterby")
 	sortBy := r.URL.Query().Get("sortby")
 	sortDirection := r.URL.Query().Get("sortdirection")
-	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(46708), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection}
+	ctx := map[string]any{"members": sortMembers(filterMembers(getOpponentMembers(46708), filterBy), sortBy, sortDirection), "sortBy": sortBy, "sortDirection": sortDirection, "path": "revenant"}
 
 	tmpl.Execute(w, ctx)
 }

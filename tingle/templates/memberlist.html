@@ -1,35 +1,35 @@
 <table class="bg-slate-100 rounded-md p-4 flex justify-center"><tbody class="[&>*:nth-child(odd)]:bg-slate-200 [&>*:nth-child(even)]:bg-slate-300">
 <tr class="rounded-t-lg bg-slate-100">
     {{ if eq .sortBy "Name" }}
-        {{ if eq .sortDirection "asc" }}<th><a href="/?sortby=Name&sortdirection=dsc">Name&darr;</a></th>
-        {{ else }}<th><a href="/?sortby=Name&sortdirection=asc">Name&uarr;</a></th>
+        {{ if eq .sortDirection "asc" }}<th><a href="/{{.path}}?sortby=Name&sortdirection=dsc">Name&darr;</a></th>
+        {{ else }}<th><a href="/{{.path}}?sortby=Name&sortdirection=asc">Name&uarr;</a></th>
         {{ end }}
-    {{ else }}<th><a href="/?sortby=Name&sortdirection=asc">Name&uarr;&darr;</a></th>
+    {{ else }}<th><a href="/{{.path}}?sortby=Name&sortdirection=asc">Name&uarr;&darr;</a></th>
     {{ end }}
     {{ if eq .sortBy "Level" }}
-        {{ if eq .sortDirection "asc" }}<th><a href="/?sortby=Level&sortdirection=dsc">Level&darr;</a></th>
-        {{ else }}<th><a href="/?sortby=Level&sortdirection=asc">Level&uarr;</a></th>
+        {{ if eq .sortDirection "asc" }}<th><a href="/{{.path}}?sortby=Level&sortdirection=dsc">Level&darr;</a></th>
+        {{ else }}<th><a href="/{{.path}}?sortby=Level&sortdirection=asc">Level&uarr;</a></th>
         {{ end }}
-    {{ else }}<th><a href="/?sortby=Level&sortdirection=dsc">Level&uarr;&darr;</a></th>
+    {{ else }}<th><a href="/{{.path}}?sortby=Level&sortdirection=dsc">Level&uarr;&darr;</a></th>
     {{ end }}
     {{ if eq .sortBy "BattleStats" }}
-        {{ if eq .sortDirection "asc" }}<th><a href="/?sortby=BattleStats&sortdirection=dsc">Stats&darr;</a></th>
-        {{ else }}<th><a href="/?sortby=BattleStats&sortdirection=asc">Stats&uarr;</a></th>
+        {{ if eq .sortDirection "asc" }}<th><a href="/{{.path}}?sortby=BattleStats&sortdirection=dsc">Stats&darr;</a></th>
+        {{ else }}<th><a href="/{{.path}}?sortby=BattleStats&sortdirection=asc">Stats&uarr;</a></th>
         {{ end }}
-    {{ else }}<th><a href="/?sortby=BattleStats&sortdirection=dsc">Stats&uarr;&darr;</a></th>
+    {{ else }}<th><a href="/{{.path}}?sortby=BattleStats&sortdirection=dsc">Stats&uarr;&darr;</a></th>
     {{ end }}
     {{ if eq .sortBy "LastStatus" }}
-        {{ if eq .sortDirection "asc" }}<th><a href="/?sortby=LastStatus&sortdirection=dsc">Last Status&darr;</a></th>
-        {{ else }}<th><a href="/?sortby=LastStatus&sortdirection=asc">Last Status&uarr;</a></th>
+        {{ if eq .sortDirection "asc" }}<th><a href="/{{.path}}?sortby=LastStatus&sortdirection=dsc">Last Status&darr;</a></th>
+        {{ else }}<th><a href="/{{.path}}?sortby=LastStatus&sortdirection=asc">Last Status&uarr;</a></th>
         {{ end }}
-    {{ else }}<th><a href="/?sortby=LastStatus&sortdirection=dsc">Last Status&uarr;&darr;</a></th>
+    {{ else }}<th><a href="/{{.path}}?sortby=LastStatus&sortdirection=dsc">Last Status&uarr;&darr;</a></th>
     {{ end }}
     <th>Last Seen</th>
     {{ if eq .sortBy "Status" }}
-        {{ if eq .sortDirection "asc" }}<th><a href="/?sortby=Status&sortdirection=dsc">Currently&darr;</a></th>
-        {{ else }}<th><a href="/?sortby=Status&sortdirection=asc">Currently&uarr;</a></th>
+        {{ if eq .sortDirection "asc" }}<th><a href="/{{.path}}?sortby=Status&sortdirection=dsc">Currently&darr;</a></th>
+        {{ else }}<th><a href="/{{.path}}?sortby=Status&sortdirection=asc">Currently&uarr;</a></th>
         {{ end }}
-    {{ else }}<th><a href="/?sortby=Status&sortdirection=dsc">Currently&uarr;&darr;</a></th>
+    {{ else }}<th><a href="/{{.path}}?sortby=Status&sortdirection=dsc">Currently&uarr;&darr;</a></th>
     {{ end }}
 </tr>
 {{ range .members }}<tr class="flex-row">

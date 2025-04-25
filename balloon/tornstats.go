@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+//https://www.tornstats.com/api/v2/TS_VeflK7cHcYnd1272/spy/faction/8062
 type SpyUserResponse struct {
 	Status  bool   `json:"status"`
 	Message string `json:"message"`
@@ -55,16 +55,50 @@ type SpyUserResponse struct {
 	} `json:"attacks"`
 }
 
+type TornStatsMember struct {
+	Name          string     `json:"name"`
+	Level         int        `json:"level"`
+	DaysInFaction int        `json:"days_in_faction"`
+	LastAction    LastAction `json:"last_action"`
+	Status        Status     `json:"status"`
+	Position      string     `json:"position"`
+	ID            int        `json:"id"`
+	Spy           struct {
+		Strength  int   `json:"strength"`
+		Defense   int   `json:"defense"`
+		Speed     int   `json:"speed"`
+		Dexterity int   `json:"dexterity"`
+		Total     int64 `json:"total"`
+		Timestamp int   `json:"timestamp"`
+	} `json:"spy"`
+}
+
+type SpyFactionResponse struct {
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
+	Faction struct {
+		ID         int                     `json:"ID"`
+		Name       string                  `json:"name"`
+		RankedWars map[int]RankedWar       `json:"ranked_wars"`
+		Members    map[int]TornStatsMember `json:"members"`
+	} `json:"faction"`
+}
+
 func (s SpyUserResponse) MarshalBinary() ([]byte, error) {
 	return json.Marshal(s)
 }
+
+func (s TornStatsMember) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
+}
+
 func getSpyReport(userId int) SpyUserResponse {
 
-	apiKey, ok := os.LookupEnv("tornStatsApiKey")
-	if !ok {
-		fmt.Println("tornStatsApiKey missing")
-		os.Exit(1)
-	}
+	// apiKey, ok := os.LookupEnv("tornStatsApiKey")
+	// if !ok {
+	// 	fmt.Println("tornStatsApiKey missing")
+	// 	os.Exit(1)
+	// }
 
 	var spyReport SpyUserResponse
 
@@ -78,32 +112,98 @@ func getSpyReport(userId int) SpyUserResponse {
 
 	result, err := rdb.Get(ctx, fmt.Sprintf("spyreport_%d", userId)).Result()
 	if err == redis.Nil {
-		fmt.Printf("get spy report for %d\n", userId)
-		URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/user/%d", apiKey, userId)
-		time.Sleep(1 * time.Second)
-		response, err := http.Get(URL)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		responseBody, err := io.ReadAll(response.Body)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		json.Unmarshal(responseBody, &spyReport)
-		defer response.Body.Close()
+		// fmt.Printf("get spy report for %d\n", userId)
+		// URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/user/%d", apiKey, userId)
+		// time.Sleep(1 * time.Second)
+		// response, err := http.Get(URL)
+		// if err != nil {
+		// 	log.Println(err)
+		// 	return spyReport
+		// }
+		// responseBody, err := io.ReadAll(response.Body)
+		// if err != nil {
+		// 	log.Println(err)
+		// 	return spyReport
+		// }
+		// json.Unmarshal(responseBody, &spyReport)
+		// defer response.Body.Close()
 
-		if spyReport.Status {
-			//push to cache
-			err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", userId), spyReport, time.Duration(rand.Intn(60)+10080)*time.Minute).Err()
-			if err != nil {
-				panic(err)
-			}
-		}
+		// if spyReport.Status {
+		// 	//push to cache
+		// 	err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", userId), spyReport, time.Duration(1440)*time.Minute).Err()
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// }
 
 		return spyReport
 	}
 	//found in cache
 	json.Unmarshal([]byte(result), &spyReport)
 	return spyReport
+
+}
+
+func getFactionSpyReport() {
+
+	fmt.Printf("running getFactionSpyReport \n")
+
+	logFile, err := os.OpenFile("getFactionSpyReport.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	defer rdb.Close()
+
+	opponent, err_redisget_WarOpponent := rdb.Get(ctx, "warOpponent").Result()
+	if err_redisget_WarOpponent == redis.Nil {
+		//panic(err_redisget_WarOpponent)
+		opponent = "8062"
+	}
+
+	apiKey, ok := os.LookupEnv("tornStatsApiKey")
+	if !ok {
+		fmt.Println("tornStatsApiKey missing")
+		os.Exit(1)
+	}
+
+	var spyReport SpyFactionResponse
+
+	fmt.Printf("get spy report for %d\n", opponent)
+	URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/faction/%s", apiKey, opponent)
+	time.Sleep(1 * time.Second)
+	response, err := http.Get(URL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	json.Unmarshal(responseBody, &spyReport)
+	defer response.Body.Close()
+
+	if spyReport.Status {
+
+		for _, member := range spyReport.Faction.Members {
+			//push to cache
+
+			fmt.Printf("%v \n", member)
+
+			err = rdb.Set(ctx, fmt.Sprintf("spyreport_%d", member.ID), member, time.Duration(1440)*time.Minute).Err()
+			if err != nil {
+				panic(err)
+			}
+
+		}
+
+	}
 
 }

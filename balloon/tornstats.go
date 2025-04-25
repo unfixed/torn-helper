@@ -144,9 +144,9 @@ func getSpyReport(userId int) SpyUserResponse {
 
 }
 
-func getFactionSpyReport() {
+func getFactionSpyReport(factionId string) {
 
-	fmt.Printf("running getFactionSpyReport \n")
+	fmt.Printf("running getFactionSpyReport:%s\n", factionId)
 
 	logFile, err := os.OpenFile("getFactionSpyReport.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -162,10 +162,17 @@ func getFactionSpyReport() {
 	})
 	defer rdb.Close()
 
-	opponent, err_redisget_WarOpponent := rdb.Get(ctx, "warOpponent").Result()
-	if err_redisget_WarOpponent == redis.Nil {
-		//panic(err_redisget_WarOpponent)
-		opponent = "8062"
+	if factionId == "" {
+		fmt.Println("------------------")
+		opponent, err_redisget_WarOpponent := rdb.Get(ctx, "warOpponent").Result()
+		if err_redisget_WarOpponent == redis.Nil {
+			log.Println(err_redisget_WarOpponent)
+			factionId = "8062"
+		} else {
+			log.Printf("got opponent factionId as %s", opponent)
+			factionId = opponent
+		}
+
 	}
 
 	apiKey, ok := os.LookupEnv("tornStatsApiKey")
@@ -176,16 +183,18 @@ func getFactionSpyReport() {
 
 	var spyReport SpyFactionResponse
 
-	fmt.Printf("get spy report for %d\n", opponent)
-	URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/faction/%s", apiKey, opponent)
+	log.Printf("getting spy report for faction %s\n", factionId)
+	URL := fmt.Sprintf("https://www.tornstats.com/api/v2/%s/spy/faction/%s", apiKey, factionId)
 	time.Sleep(1 * time.Second)
 	response, err := http.Get(URL)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return
 	}
 	json.Unmarshal(responseBody, &spyReport)
 	defer response.Body.Close()

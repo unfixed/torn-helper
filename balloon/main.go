@@ -352,10 +352,11 @@ func runInstance(factionId string, apiKey ApiKey, waitGroup *sync.WaitGroup) {
 	}
 }
 
-func runTornStatsInstance(waitGroup *sync.WaitGroup) {
+func runTornStatsInstance(factionId string, waitGroup *sync.WaitGroup) {
 	defer waitGroup.Done()
 	for {
-		getFactionSpyReport()
+		getFactionSpyReport(factionId)
+		getFactionSpyReport("")
 		time.Sleep(30 * time.Minute)
 	}
 }
@@ -387,7 +388,7 @@ func main() {
 	var waitGroup sync.WaitGroup
 
 	waitGroup.Add(1)
-	go runTornStatsInstance(&waitGroup)
+	go runTornStatsInstance(factionId, &waitGroup)
 
 	for _, key := range keys {
 
@@ -395,7 +396,6 @@ func main() {
 		go runInstance(factionId, key, &waitGroup)
 		time.Sleep(10100 * time.Millisecond)
 	}
-
 
 	waitGroup.Wait()
 }
